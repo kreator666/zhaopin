@@ -56,7 +56,7 @@ def get_job(job_id):
 @jwt_required()
 def create_job():
     """发布职位（仅企业用户）"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.role != 'company':
@@ -99,7 +99,7 @@ def create_job():
 @jwt_required()
 def update_job(job_id):
     """更新职位"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     job = Job.query.get_or_404(job_id)
     
@@ -133,7 +133,7 @@ def update_job(job_id):
 @jwt_required()
 def delete_job(job_id):
     """删除职位"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     job = Job.query.get_or_404(job_id)
     
@@ -151,7 +151,7 @@ def delete_job(job_id):
 @jwt_required()
 def get_my_jobs():
     """获取我发布的职位（企业用户）"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.role != 'company':

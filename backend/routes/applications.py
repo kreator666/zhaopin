@@ -8,7 +8,7 @@ applications_bp = Blueprint('applications', __name__)
 @jwt_required()
 def apply_job():
     """投递简历"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.role != 'job_seeker':
@@ -51,7 +51,7 @@ def apply_job():
 @jwt_required()
 def get_my_applications():
     """获取我的投递记录（求职者）"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.role != 'job_seeker':
@@ -76,7 +76,7 @@ def get_my_applications():
 @jwt_required()
 def get_received_applications():
     """获取收到的简历（企业HR）"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.role != 'company':
@@ -107,7 +107,7 @@ def get_received_applications():
 @jwt_required()
 def update_application(app_id):
     """更新投递状态（企业HR接受/拒绝）"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.role != 'company':

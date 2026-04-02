@@ -23,11 +23,16 @@
 
 ```
 zhaopin/
+├── start.bat                   # Windows 一键启动脚本
+├── start.ps1                   # PowerShell 启动脚本（带状态检测）
+├── stop.bat                    # Windows 停止脚本
+├── stop.ps1                    # PowerShell 停止脚本
 ├── backend/                    # Flask 后端
 │   ├── app.py                  # 应用入口
 │   ├── config.py               # 配置
 │   ├── models.py               # 数据库模型
 │   ├── requirements.txt        # Python依赖
+│   ├── venv/                   # Python虚拟环境
 │   └── routes/                 # API路由
 │       ├── auth.py             # 认证接口
 │       ├── jobs.py             # 职位接口
@@ -57,18 +62,48 @@ zhaopin/
 
 ## 快速开始
 
-### 1. 启动后端
+### 方式一：一键启动（推荐）
+
+项目已配置一键启动脚本，无需手动输入命令：
+
+#### Windows CMD / PowerShell
+```bash
+# 启动服务
+start.bat
+
+# 或使用 PowerShell 脚本（带服务状态检测）
+.\start.ps1
+```
+
+#### 停止服务
+```bash
+# 停止所有服务
+stop.bat
+
+# 或使用 PowerShell
+.\stop.ps1
+```
+
+启动后会自动打开：
+- 前端页面: http://localhost:5173
+- 后端API: http://localhost:5000
+
+### 方式二：手动启动
+
+如果需要手动控制，可以分别启动：
+
+#### 1. 启动后端
 
 ```bash
 cd backend
 
-# 创建虚拟环境（可选但推荐）
+# 创建虚拟环境（首次）
 python -m venv venv
 
 # Windows 激活虚拟环境
 venv\Scripts\activate
 
-# 安装依赖
+# 安装依赖（首次）
 pip install -r requirements.txt
 
 # 启动服务器
@@ -77,12 +112,12 @@ python app.py
 
 后端服务将运行在 `http://localhost:5000`
 
-### 2. 启动前端
+#### 2. 启动前端
 
 ```bash
 cd frontend
 
-# 安装依赖
+# 安装依赖（首次）
 npm install
 
 # 启动开发服务器

@@ -49,7 +49,8 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/company/jobs'
+        name: 'CompanyDashboard',
+        component: () => import('@/views/company/Dashboard.vue')
       },
       {
         path: 'jobs',

@@ -15,6 +15,11 @@
           text-color="#bfcbd9"
           active-text-color="#409EFF"
         >
+          <el-menu-item index="/company">
+            <el-icon><HomeFilled /></el-icon>
+            <span>概览</span>
+          </el-menu-item>
+          
           <el-menu-item index="/company/jobs">
             <el-icon><Document /></el-icon>
             <span>职位管理</span>

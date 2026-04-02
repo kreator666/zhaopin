@@ -51,7 +51,7 @@ def register():
     db.session.commit()
     
     # 生成token
-    access_token = create_access_token(identity=user.id)
+    access_token = create_access_token(identity=str(user.id))
     
     return jsonify({
         'message': '注册成功',
@@ -72,7 +72,7 @@ def login():
     if not user or not user.check_password(data['password']):
         return jsonify({'error': '用户名或密码错误'}), 401
     
-    access_token = create_access_token(identity=user.id)
+    access_token = create_access_token(identity=str(user.id))
     
     return jsonify({
         'message': '登录成功',
@@ -84,7 +84,7 @@ def login():
 @auth_bp.route('/me', methods=['GET'])
 @jwt_required()
 def get_current_user():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user:

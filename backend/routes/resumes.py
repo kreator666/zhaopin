@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import db, JobSeekerProfile, User
+from datetime import datetime
 
 resumes_bp = Blueprint('resumes', __name__)
 
@@ -8,7 +9,7 @@ resumes_bp = Blueprint('resumes', __name__)
 @jwt_required()
 def get_resume():
     """获取我的简历"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.role != 'job_seeker':
@@ -28,7 +29,7 @@ def get_resume():
 @jwt_required()
 def create_or_update_resume():
     """创建或更新简历"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
     if not user or user.role != 'job_seeker':
@@ -43,7 +44,15 @@ def create_or_update_resume():
     # 更新字段
     profile.name = data.get('name', profile.name)
     profile.gender = data.get('gender', profile.gender)
-    profile.birth_date = data.get('birth_date') or profile.birth_date
+    
+    # 处理日期字符串转 Python date 对象
+    birth_date_str = data.get('birth_date')
+    if birth_date_str:
+        try:
+            profile.birth_date = datetime.strptime(birth_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            pass  # 日期格式错误，保持原值
+    
     profile.location = data.get('location', profile.location)
     profile.summary = data.get('summary', profile.summary)
     profile.experience_text = data.get('experience_text', profile.experience_text)
@@ -63,7 +72,7 @@ def create_or_update_resume():
 @jwt_required()
 def get_resume_by_user(user_id):
     """获取指定用户的简历（用于HR查看）"""
-    current_user_id = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
     
     if not current_user or current_user.role != 'company':

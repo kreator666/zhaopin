@@ -9,7 +9,16 @@
     </div>
     
     <el-card>
-      <el-table :data="jobs" v-loading="loading" style="width: 100%">
+      <!-- 空状态引导 -->
+      <el-empty v-if="!loading && jobs.length === 0" description="暂无职位">
+        <template #description>
+          <p>您还没有发布任何职位</p>
+          <p style="color: #999; font-size: 14px; margin-top: 10px;">点击右上角"发布职位"按钮开始招聘</p>
+        </template>
+        <el-button type="primary" @click="goToCreate">立即发布职位</el-button>
+      </el-empty>
+      
+      <el-table v-else :data="jobs" v-loading="loading" style="width: 100%">
         <el-table-column prop="title" label="职位名称" min-width="150" />
         <el-table-column label="薪资范围" width="150">
           <template #default="{ row }">
@@ -45,7 +54,7 @@
         </el-table-column>
       </el-table>
       
-      <div class="pagination">
+      <div v-if="jobs.length > 0" class="pagination">
         <el-pagination
           v-model:current-page="page"
           v-model:page-size="perPage"
