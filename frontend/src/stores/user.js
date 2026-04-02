@@ -10,8 +10,11 @@ export const useUserStore = defineStore('user', () => {
 
   // Getters
   const isLoggedIn = computed(() => !!token.value)
-  const isJobSeeker = computed(() => userInfo.value?.role === 'job_seeker')
   const isCompany = computed(() => userInfo.value?.role === 'company')
+  // 学生/求职者/校友都属于个人用户（非企业）
+  const isPersonalUser = computed(() => !isCompany.value)
+  // 兼容旧代码：job_seeker 或 student 都视为求职者
+  const isJobSeeker = computed(() => ['job_seeker', 'student', 'alumni'].includes(userInfo.value?.role))
 
   // Actions
   const setToken = (newToken) => {
@@ -58,6 +61,7 @@ export const useUserStore = defineStore('user', () => {
     isLoggedIn,
     isJobSeeker,
     isCompany,
+    isPersonalUser,
     setToken,
     setUserInfo,
     fetchUserInfo,

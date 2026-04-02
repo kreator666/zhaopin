@@ -129,7 +129,15 @@ const handleSubmit = async () => {
     userStore.setToken(res.access_token)
     userStore.setUserInfo(res.user)
     ElMessage.success('注册成功')
-    router.push('/')
+    
+    // 根据角色跳转不同页面
+    if (userStore.isCompany) {
+      // 企业用户跳转到企业管理页面
+      router.push('/company')
+    } else {
+      // 学生/求职者等个人用户跳转到个人主页
+      router.push(`/profile/${res.user.id}`)
+    }
   } catch (error) {
     console.error('注册失败', error)
   } finally {

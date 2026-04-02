@@ -21,14 +21,32 @@ def create_app():
     
     # 注册路由
     from routes.auth import auth_bp
+    from routes.users import users_bp
     from routes.jobs import jobs_bp
     from routes.resumes import resumes_bp
     from routes.applications import applications_bp
+    from routes.interview import interview_bp
+    from routes.training import training_bp
+    from routes.social import social_bp
+    from routes.circles import circles_bp
+    from routes.events import events_bp
+    from routes.messages import messages_bp
+    from routes.flea import flea_bp
+    from routes.upload import upload_bp
     
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
+    app.register_blueprint(users_bp, url_prefix='/api/users')
     app.register_blueprint(jobs_bp, url_prefix='/api/jobs')
     app.register_blueprint(resumes_bp, url_prefix='/api/resume')
     app.register_blueprint(applications_bp, url_prefix='/api/applications')
+    app.register_blueprint(interview_bp, url_prefix='/api/interview')
+    app.register_blueprint(training_bp, url_prefix='/api/training')
+    app.register_blueprint(social_bp, url_prefix='/api/social')
+    app.register_blueprint(circles_bp, url_prefix='/api/circles')
+    app.register_blueprint(events_bp, url_prefix='/api/events')
+    app.register_blueprint(messages_bp, url_prefix='/api/messages')
+    app.register_blueprint(flea_bp, url_prefix='/api/flea')
+    app.register_blueprint(upload_bp, url_prefix='/api/upload')
     
     # 创建数据库表
     with app.app_context():

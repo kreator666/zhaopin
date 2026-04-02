@@ -19,29 +19,184 @@ const routes = [
     component: () => import('@/views/Register.vue'),
     meta: { guest: true }
   },
+  
+  // ========== 个人主页模块 ==========
+  {
+    path: '/profile/:id',
+    name: 'UserProfile',
+    component: () => import('@/views/profile/Profile.vue')
+  },
+  {
+    path: '/profile/edit',
+    name: 'EditProfile',
+    component: () => import('@/views/profile/EditProfile.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/my/favorites',
+    name: 'MyFavorites',
+    component: () => import('@/views/profile/MyFavorites.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/my/followers',
+    name: 'MyFollowers',
+    component: () => import('@/views/profile/MyFollowers.vue'),
+    meta: { requiresAuth: true }
+  },
+  
+  // ========== 求职模块 ==========
   {
     path: '/jobs',
     name: 'JobList',
-    component: () => import('@/views/JobList.vue')
+    component: () => import('@/views/jobs/JobList.vue')
   },
   {
     path: '/jobs/:id',
     name: 'JobDetail',
-    component: () => import('@/views/JobDetail.vue')
+    component: () => import('@/views/jobs/JobDetail.vue')
   },
   {
     path: '/resume',
     name: 'Resume',
-    component: () => import('@/views/Resume.vue'),
-    meta: { requiresAuth: true, role: 'job_seeker' }
+    component: () => import('@/views/jobs/Resume.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/applications',
     name: 'MyApplications',
-    component: () => import('@/views/MyApplications.vue'),
-    meta: { requiresAuth: true, role: 'job_seeker' }
+    component: () => import('@/views/jobs/MyApplications.vue'),
+    meta: { requiresAuth: true }
   },
-  // 企业端路由
+  {
+    path: '/interview',
+    name: 'InterviewList',
+    component: () => import('@/views/jobs/InterviewList.vue')
+  },
+  {
+    path: '/interview/:id',
+    name: 'InterviewDetail',
+    component: () => import('@/views/jobs/InterviewDetail.vue')
+  },
+  {
+    path: '/campus-talks',
+    name: 'CampusTalks',
+    component: () => import('@/views/jobs/CampusTalks.vue')
+  },
+  
+  // ========== 培训学习模块 ==========
+  {
+    path: '/training',
+    name: 'Training',
+    component: () => import('@/views/training/TrainingHome.vue')
+  },
+  {
+    path: '/training/courses',
+    name: 'CourseList',
+    component: () => import('@/views/training/CourseList.vue')
+  },
+  {
+    path: '/training/courses/:id',
+    name: 'CourseDetail',
+    component: () => import('@/views/training/CourseDetail.vue')
+  },
+  {
+    path: '/training/my-courses',
+    name: 'MyCourses',
+    component: () => import('@/views/training/MyCourses.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/training/materials',
+    name: 'MaterialList',
+    component: () => import('@/views/training/MaterialList.vue')
+  },
+  {
+    path: '/training/certifications',
+    name: 'Certifications',
+    component: () => import('@/views/training/Certifications.vue')
+  },
+  
+  // ========== 交友社交模块 ==========
+  {
+    path: '/social',
+    name: 'SocialFeed',
+    component: () => import('@/views/social/Feed.vue')
+  },
+  {
+    path: '/social/post/:id',
+    name: 'PostDetail',
+    component: () => import('@/views/social/PostDetail.vue')
+  },
+  {
+    path: '/social/circles',
+    name: 'CircleList',
+    component: () => import('@/views/social/CircleList.vue')
+  },
+  {
+    path: '/social/circles/:id',
+    name: 'CircleDetail',
+    component: () => import('@/views/social/CircleDetail.vue')
+  },
+  {
+    path: '/social/events',
+    name: 'EventList',
+    component: () => import('@/views/social/EventList.vue')
+  },
+  {
+    path: '/social/events/:id',
+    name: 'EventDetail',
+    component: () => import('@/views/social/EventDetail.vue')
+  },
+  {
+    path: '/social/my-events',
+    name: 'MyEvents',
+    component: () => import('@/views/social/MyEvents.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/messages',
+    name: 'Messages',
+    component: () => import('@/views/social/Messages.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/messages/:userId',
+    name: 'Chat',
+    component: () => import('@/views/social/Chat.vue'),
+    meta: { requiresAuth: true }
+  },
+  
+  // ========== 跳蚤市场模块 ==========
+  {
+    path: '/flea',
+    name: 'FleaMarket',
+    component: () => import('@/views/flea/FleaMarket.vue')
+  },
+  {
+    path: '/flea/items/:id',
+    name: 'ItemDetail',
+    component: () => import('@/views/flea/ItemDetail.vue')
+  },
+  {
+    path: '/flea/publish',
+    name: 'PublishItem',
+    component: () => import('@/views/flea/PublishItem.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/flea/my-items',
+    name: 'MyItems',
+    component: () => import('@/views/flea/MyItems.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/flea/wanted',
+    name: 'WantedList',
+    component: () => import('@/views/flea/WantedList.vue')
+  },
+  
+  // ========== 企业端路由 ==========
   {
     path: '/company',
     component: () => import('@/views/company/Layout.vue'),
@@ -100,7 +255,12 @@ router.beforeEach(async (to, from, next) => {
   
   // 游客页面（登录后不能访问）
   if (to.meta.guest && userStore.isLoggedIn) {
-    return next('/')
+    // 根据角色跳转到不同页面
+    if (userStore.userInfo?.role === 'company') {
+      return next('/company')
+    } else {
+      return next(`/profile/${userStore.userInfo?.id}`)
+    }
   }
   
   next()
