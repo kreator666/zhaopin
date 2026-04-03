@@ -13,13 +13,40 @@ social_bp = Blueprint('social', __name__)
 
 
 @social_bp.route('/feed', methods=['GET'])
+@jwt_required(optional=True)
 def get_feed():
-    """获取动态流"""
+    """获取动态流
+    filter: all(默认), school(同校), following(关注)
+    """
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
     circle_id = request.args.get('circle_id', type=int)
+    filter_type = request.args.get('filter', 'all')
     
     query = SocialPost.query.filter_by(status='active')
+    
+    # 获取当前用户（可选登录）
+    user_id = get_jwt_identity()
+    current_user = None
+    if user_id:
+        current_user = User.query.get(int(user_id))
+    
+    # 按筛选条件过滤
+    if filter_type == 'school' and current_user and current_user.school_name:
+        # 同校动态 - 只显示同校用户发布的
+        query = query.join(User, SocialPost.user_id == User.id)\
+                     .filter(User.school_name == current_user.school_name)
+    elif filter_type == 'following' and current_user:
+        # 关注的人的动态
+        from models import UserFollow
+        following_ids = db.session.query(UserFollow.following_id)\
+            .filter_by(follower_id=current_user.id).all()
+        following_ids = [f[0] for f in following_ids]
+        if following_ids:
+            query = query.filter(SocialPost.user_id.in_(following_ids))
+        else:
+            # 没有关注任何人，返回空
+            return jsonify({'items': [], 'total': 0, 'pages': 0, 'current_page': page})
     
     if circle_id:
         query = query.filter_by(circle_id=circle_id)
@@ -27,8 +54,31 @@ def get_feed():
     posts = query.order_by(SocialPost.created_at.desc())\
         .paginate(page=page, per_page=per_page, error_out=False)
     
+    # 构建返回数据，添加当前用户是否点赞、是否关注
+    items = []
+    for post in posts.items:
+        post_dict = post.to_dict(include_user=True)
+        if current_user:
+            # 检查是否点赞
+            is_liked = PostLike.query.filter_by(
+                user_id=current_user.id,
+                target_id=post.id,
+                target_type='post'
+            ).first() is not None
+            post_dict['is_liked'] = is_liked
+            
+            # 检查是否关注作者
+            if post.user_id != current_user.id:
+                from models import UserFollow
+                is_following = UserFollow.query.filter_by(
+                    follower_id=current_user.id,
+                    following_id=post.user_id
+                ).first() is not None
+                post_dict['is_following'] = is_following
+        items.append(post_dict)
+    
     return jsonify({
-        'items': [p.to_dict(include_user=True) for p in posts.items],
+        'items': items,
         'total': posts.total,
         'pages': posts.pages,
         'current_page': page
