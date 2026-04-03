@@ -66,13 +66,13 @@
         <template v-if="userStore.isLoggedIn">
           <el-dropdown>
             <span class="user-info">
-              <el-avatar :size="32" :src="userStore.userInfo?.avatar_url" />
+              <el-avatar :size="32" :src="userAvatar" />
               {{ userStore.userInfo?.username }}
               <el-icon class="el-icon--right"><ArrowDown /></el-icon>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item @click="$router.push(`/profile/${userStore.userInfo?.id}`)">
+                <el-dropdown-item @click="goToMyProfile">
                   <el-icon><User /></el-icon>个人主页
                 </el-dropdown-item>
                 <el-dropdown-item @click="$router.push('/profile/edit')">
@@ -107,7 +107,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -117,6 +117,19 @@ import { getUnreadCount } from '@/api/social'
 const userStore = useUserStore()
 const router = useRouter()
 const unreadCount = ref(0)
+const API_BASE_URL = 'http://localhost:5000'
+
+// 获取完整图片URL
+const getFullImageUrl = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return `${API_BASE_URL}${url}`
+}
+
+// 用户头像（完整URL）
+const userAvatar = computed(() => {
+  return getFullImageUrl(userStore.userInfo?.avatar_url)
+})
 
 const fetchUnreadCount = async () => {
   if (!userStore.isLoggedIn) return
@@ -126,6 +139,15 @@ const fetchUnreadCount = async () => {
   } catch (error) {
     console.error('获取未读消息失败', error)
   }
+}
+
+const goToMyProfile = () => {
+  if (!userStore.isLoggedIn || !userStore.userInfo?.id) {
+    ElMessage.warning('请先登录')
+    router.push('/login')
+    return
+  }
+  router.push(`/profile/${userStore.userInfo.id}`)
 }
 
 const handleLogout = () => {

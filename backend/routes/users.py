@@ -15,18 +15,26 @@ users_bp = Blueprint('users', __name__)
 
 @users_bp.route('/<int:user_id>', methods=['GET'])
 def get_user_profile(user_id):
-    """获取用户资料"""
+    """获取用户资料（包含完整关联数据）"""
     user = User.query.get_or_404(user_id)
-    return jsonify(user.to_dict(include_profile=True))
+    return jsonify(user.to_dict(
+        include_profile=True,
+        include_skills=True,
+        include_badges=True
+    ))
 
 
 @users_bp.route('/me', methods=['GET'])
 @jwt_required()
 def get_my_profile():
-    """获取当前用户资料"""
+    """获取当前用户资料（包含完整关联数据）"""
     user_id = get_jwt_identity()
     user = User.query.get_or_404(user_id)
-    return jsonify(user.to_dict(include_profile=True))
+    return jsonify(user.to_dict(
+        include_profile=True,
+        include_skills=True,
+        include_badges=True
+    ))
 
 
 @users_bp.route('/me', methods=['PUT'])
@@ -77,8 +85,18 @@ def follow_user(user_id):
     # 更新计数
     current_user = User.query.get(current_user_id)
     target_user = User.query.get(user_id)
-    current_user.following_count += 1
-    target_user.follower_count += 1
+    current_user.following_count = (current_user.following_count or 0) + 1
+    target_user.follower_count = (target_user.follower_count or 0) + 1
+    
+    # 创建动态记录
+    activity = UserActivity(
+        user_id=current_user_id,
+        activity_type='follow',
+        target_id=user_id,
+        target_type='user',
+        content=f'关注了 {target_user.username}'
+    )
+    db.session.add(activity)
     
     db.session.commit()
     return jsonify({'message': '关注成功'})

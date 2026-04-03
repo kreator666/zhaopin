@@ -5,7 +5,7 @@ from config import Config
 from models import db
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='static', static_url_path='/static')
     app.config.from_object(Config)
     
     # 初始化扩展
@@ -16,6 +16,10 @@ def create_app():
             "origins": ["http://localhost:5173", "http://127.0.0.1:5173"],
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"]
+        },
+        r"/static/*": {
+            "origins": ["http://localhost:5173", "http://127.0.0.1:5173"],
+            "methods": ["GET", "OPTIONS"]
         }
     })
     

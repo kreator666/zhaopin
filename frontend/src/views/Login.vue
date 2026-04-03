@@ -75,8 +75,9 @@ const handleSubmit = async () => {
   loading.value = true
   try {
     const res = await authApi.login(form.value)
-    userStore.setToken(res.access_token)
-    userStore.setUserInfo(res.user)
+    const { access_token, user } = res.data
+    userStore.setToken(access_token)
+    userStore.setUserInfo(user)
     ElMessage.success('登录成功')
     
     // 根据角色跳转不同页面
@@ -85,7 +86,7 @@ const handleSubmit = async () => {
       router.push('/company')
     } else {
       // 学生/校友等个人用户跳转到个人主页
-      router.push(`/profile/${res.user.id}`)
+      router.push(`/profile/${user.id}`)
     }
   } catch (error) {
     console.error('登录失败', error)

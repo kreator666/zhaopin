@@ -5,35 +5,35 @@ import request from './request'
 
 // ========== 课程 ==========
 export const getCourses = (params = {}) => {
-  return request.get('/training/courses', { params })
+  return request.get('/api/training/courses', { params })
 }
 
 export const getCourse = (courseId) => {
-  return request.get(`/training/courses/${courseId}`)
+  return request.get(`/api/training/courses/${courseId}`)
 }
 
 export const enrollCourse = (courseId) => {
-  return request.post(`/training/courses/${courseId}/enroll`)
+  return request.post(`/api/training/courses/${courseId}/enroll`)
 }
 
 export const getMyCourses = () => {
-  return request.get('/training/my-courses')
+  return request.get('/api/training/my-courses')
 }
 
 // ========== 学习资料 ==========
 export const getMaterials = (params = {}) => {
-  return request.get('/training/materials', { params })
+  return request.get('/api/training/materials', { params })
 }
 
 export const uploadMaterial = (data) => {
-  return request.post('/training/materials', data)
+  return request.post('/api/training/materials', data)
 }
 
 export const downloadMaterial = (materialId) => {
-  return request.post(`/training/materials/${materialId}/download`)
+  return request.post(`/api/training/materials/${materialId}/download`)
 }
 
 // ========== 考证信息 ==========
 export const getCertifications = (params = {}) => {
-  return request.get('/training/certifications', { params })
+  return request.get('/api/training/certifications', { params })
 }

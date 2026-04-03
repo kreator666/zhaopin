@@ -165,13 +165,15 @@ const fetchStats = async () => {
   try {
     // 获取职位统计
     const jobsRes = await jobsApi.getMyJobs({ per_page: 100 })
-    const jobs = jobsRes.items || []
+    const jobsData = jobsRes.data || jobsRes
+    const jobs = jobsData.items || []
     stats.value.totalJobs = jobs.length
     stats.value.activeJobs = jobs.filter(j => j.status === 'active').length
     
     // 获取简历统计
     const appsRes = await applicationsApi.getReceivedApplications({ per_page: 100 })
-    const apps = appsRes.items || []
+    const appsData = appsRes.data || appsRes
+    const apps = appsData.items || []
     stats.value.totalApplications = apps.length
     stats.value.pendingApplications = apps.filter(a => a.status === 'pending').length
     

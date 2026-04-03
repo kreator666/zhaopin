@@ -89,8 +89,9 @@ const fetchApplications = async () => {
       page: page.value,
       per_page: perPage.value
     })
-    applications.value = res.items
-    total.value = res.total
+    const data = res.data || res
+    applications.value = data.items || []
+    total.value = data.total || 0
   } catch (error) {
     console.error('获取投递记录失败', error)
   }

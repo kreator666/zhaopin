@@ -116,7 +116,10 @@ const fetchJobDetail = async () => {
   loading.value = true
   try {
     const res = await jobsApi.getDetail(route.params.id)
-    Object.assign(form, res)
+    const data = res.data || res
+    if (data) {
+      Object.assign(form, data)
+    }
   } catch (error) {
     console.error('获取职位详情失败', error)
     ElMessage.error('职位不存在')

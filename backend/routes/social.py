@@ -7,7 +7,7 @@
 
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import db, SocialPost, PostComment, PostLike
+from models import db, SocialPost, PostComment, PostLike, UserActivity, User
 
 social_bp = Blueprint('social', __name__)
 
@@ -55,7 +55,17 @@ def create_post():
     
     # 更新用户发帖数
     user = User.query.get(user_id)
-    user.post_count += 1
+    user.post_count = (user.post_count or 0) + 1
+    
+    # 创建动态记录
+    activity = UserActivity(
+        user_id=user_id,
+        activity_type='post',
+        target_id=post.id,
+        target_type='post',
+        content=f'发布了新动态：{post.content[:50]}{"..." if len(post.content) > 50 else ""}'
+    )
+    db.session.add(activity)
     
     db.session.commit()
     return jsonify({'message': '发布成功', 'post': post.to_dict()})

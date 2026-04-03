@@ -126,8 +126,9 @@ const handleSubmit = async () => {
   loading.value = true
   try {
     const res = await authApi.register(submitData)
-    userStore.setToken(res.access_token)
-    userStore.setUserInfo(res.user)
+    const { access_token, user } = res.data
+    userStore.setToken(access_token)
+    userStore.setUserInfo(user)
     ElMessage.success('注册成功')
     
     // 根据角色跳转不同页面
@@ -136,7 +137,7 @@ const handleSubmit = async () => {
       router.push('/company')
     } else {
       // 学生/求职者等个人用户跳转到个人主页
-      router.push(`/profile/${res.user.id}`)
+      router.push(`/profile/${user.id}`)
     }
   } catch (error) {
     console.error('注册失败', error)

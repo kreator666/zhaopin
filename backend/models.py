@@ -51,6 +51,7 @@ class User(db.Model):
     # 关联
     company = db.relationship('Company', backref='user', uselist=False, lazy=True)
     job_seeker_profile = db.relationship('JobSeekerProfile', backref='user', uselist=False, lazy=True)
+    # skills 和 badges 通过 UserSkill/UserBadge 中的 backref 自动关联
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -58,7 +59,7 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
     
-    def to_dict(self, include_profile=False):
+    def to_dict(self, include_profile=False, include_skills=False, include_badges=False, include_stats=False):
         data = {
             'id': self.id,
             'username': self.username,
@@ -83,6 +84,10 @@ class User(db.Model):
         }
         if include_profile and self.job_seeker_profile:
             data['profile'] = self.job_seeker_profile.to_dict()
+        if include_skills:
+            data['skills'] = [skill.to_dict() for skill in self.skills]
+        if include_badges:
+            data['badges'] = [badge.to_dict() for badge in self.badges]
         return data
 
 
@@ -355,7 +360,7 @@ class Application(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    # 关联
+    # 关联 - job 关系通过 Job 模型的 backref 自动创建
     seeker = db.relationship('User', backref='applications', lazy=True)
     
     def to_dict(self, include_job=False, include_seeker=False):

@@ -22,8 +22,8 @@
               <el-col :span="12">
                 <el-form-item label="性别">
                   <el-radio-group v-model="form.gender">
-                    <el-radio label="男">男</el-radio>
-                    <el-radio label="女">女</el-radio>
+                    <el-radio value="男">男</el-radio>
+                    <el-radio value="女">女</el-radio>
                   </el-radio-group>
                 </el-form-item>
               </el-col>
@@ -121,9 +121,24 @@ const fetchResume = async () => {
   loading.value = true
   try {
     const res = await resumeApi.getMyResume()
-    Object.assign(form, res)
+    console.log('Resume API response:', res)
+    const data = res.data || res
+    console.log('Resume data:', data)
+    if (data && data.id) {
+      // 逐个字段赋值，确保响应式正常工作
+      form.name = data.name || ''
+      form.gender = data.gender || ''
+      form.birth_date = data.birth_date || ''
+      form.location = data.location || ''
+      form.summary = data.summary || ''
+      form.experience_text = data.experience_text || ''
+      form.education_text = data.education_text || ''
+      form.skills = data.skills || ''
+      console.log('Form after assign:', form)
+    }
   } catch (error) {
     console.error('获取简历失败', error)
+    ElMessage.error('获取简历失败')
   } finally {
     loading.value = false
   }

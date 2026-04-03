@@ -93,7 +93,8 @@ const goToJobDetail = (id) => {
 const fetchLatestJobs = async () => {
   try {
     const res = await jobsApi.getList({ per_page: 6 })
-    latestJobs.value = res.items
+    const data = res.data || res
+    latestJobs.value = data.items || []
   } catch (error) {
     console.error('获取职位失败', error)
   }

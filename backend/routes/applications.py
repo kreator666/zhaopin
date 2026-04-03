@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import db, Application, Job, User
+from models import db, Application, Job, User, UserActivity
 
 applications_bp = Blueprint('applications', __name__)
 
@@ -11,7 +11,7 @@ def apply_job():
     user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
-    if not user or user.role != 'job_seeker':
+    if not user or user.role == 'company':
         return jsonify({'error': '只有求职者才能投递简历'}), 403
     
     data = request.get_json()
@@ -39,6 +39,20 @@ def apply_job():
     )
     
     db.session.add(application)
+    
+    # 创建动态记录
+    activity = UserActivity(
+        user_id=user_id,
+        activity_type='job_apply',
+        target_id=job_id,
+        target_type='job',
+        content=f'投递了职位「{job.title}」'
+    )
+    db.session.add(activity)
+    
+    # 更新用户动态计数
+    user.post_count = (user.post_count or 0) + 1
+    
     db.session.commit()
     
     return jsonify({
@@ -54,7 +68,7 @@ def get_my_applications():
     user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
-    if not user or user.role != 'job_seeker':
+    if not user or user.role == 'company':
         return jsonify({'error': '只有求职者才能查看'}), 403
     
     page = request.args.get('page', 1, type=int)

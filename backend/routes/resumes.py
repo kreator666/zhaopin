@@ -12,7 +12,7 @@ def get_resume():
     user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
-    if not user or user.role != 'job_seeker':
+    if not user or user.role == 'company':
         return jsonify({'error': '只有求职者才能查看简历'}), 403
     
     profile = user.job_seeker_profile
@@ -32,7 +32,7 @@ def create_or_update_resume():
     user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
-    if not user or user.role != 'job_seeker':
+    if not user or user.role == 'company':
         return jsonify({'error': '只有求职者才能编辑简历'}), 403
     
     data = request.get_json()

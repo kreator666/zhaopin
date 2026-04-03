@@ -1,5 +1,8 @@
 <template>
   <div class="profile-page">
+    <!-- 导航栏 -->
+    <Navbar />
+    
     <!-- 封面图 -->
     <div class="cover-section" :style="coverStyle">
       <div class="cover-overlay"></div>
@@ -11,7 +14,7 @@
         <div class="user-info">
           <el-avatar 
             :size="120" 
-            :src="userInfo.avatar_url || defaultAvatar"
+            :src="getFullImageUrl(userInfo.avatar_url) || defaultAvatar"
             class="user-avatar"
           />
           <div class="user-meta">
@@ -173,16 +176,39 @@
               <el-empty description="暂无帖子" />
             </el-tab-pane>
 
-            <el-tab-pane label="求职" name="jobs" v-if="userInfo.role === 'student' || userInfo.role === 'job_seeker'">
-              <div class="job-status" v-if="profile">
-                <h4>求职意向</h4>
-                <p v-if="profile.expected_location">期望城市：{{ profile.expected_location }}</p>
-                <p v-if="profile.expected_salary_min || profile.expected_salary_max">
-                  期望薪资：{{ profile.expected_salary_min }}-{{ profile.expected_salary_max }}K
-                </p>
-                <el-button type="primary" @click="$router.push('/resume')">
-                  查看完整简历
-                </el-button>
+            <el-tab-pane label="求职" name="jobs" v-if="userInfo.role === 'student' || userInfo.role === 'job_seeker' || userInfo.role === 'alumni'">
+              <div class="job-section">
+                <!-- 求职意向 -->
+                <div class="job-status" v-if="profile">
+                  <h4>求职意向</h4>
+                  <p v-if="profile.expected_location">期望城市：{{ profile.expected_location }}</p>
+                  <p v-if="profile.expected_salary_min || profile.expected_salary_max">
+                    期望薪资：{{ profile.expected_salary_min }}-{{ profile.expected_salary_max }}K
+                  </p>
+                  <el-button type="primary" @click="$router.push('/resume')">
+                    查看完整简历
+                  </el-button>
+                </div>
+                
+                <!-- 投递记录 -->
+                <div class="applications-section" v-if="isCurrentUser">
+                  <h4>投递记录</h4>
+                  <div class="applications-list" v-if="jobApplications.length > 0">
+                    <div v-for="app in jobApplications" :key="app.id" class="application-item">
+                      <div class="app-job-info">
+                        <h5 @click="$router.push(`/jobs/${app.job_id}`)">{{ app.job?.title || '未知职位' }}</h5>
+                        <p class="company-name">{{ app.job?.company_name || '未知公司' }}</p>
+                      </div>
+                      <div class="app-status">
+                        <el-tag :type="getStatusType(app.status)" size="small">
+                          {{ getStatusText(app.status) }}
+                        </el-tag>
+                        <span class="app-time">{{ formatTime(app.created_at) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <el-empty v-else description="暂无投递记录" />
+                </div>
               </div>
             </el-tab-pane>
 
@@ -215,9 +241,12 @@ import {
   Share,
   User,
   Collection,
-  Trophy
+  Trophy,
+  ShoppingBag
 } from '@element-plus/icons-vue'
-import { getUserProfile, getMyProfile, followUser, unfollowUser, getUserActivities } from '@/api/user'
+import Navbar from '@/components/Navbar.vue'
+import { getUserProfile, getMyProfile, followUser, unfollowUser, getUserActivities, getFollowing } from '@/api/user'
+import { applicationsApi } from '@/api/applications'
 
 const route = useRoute()
 const router = useRouter()
@@ -225,6 +254,14 @@ const userStore = useUserStore()
 
 const defaultAvatar = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
 const defaultCover = 'https://picsum.photos/1200/300'
+const API_BASE_URL = 'http://localhost:5000'
+
+// 获取完整图片URL
+const getFullImageUrl = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return `${API_BASE_URL}${url}`
+}
 
 // 数据
 const userInfo = ref({})
@@ -236,15 +273,17 @@ const isFollowing = ref(false)
 const activeTab = ref('activities')
 const currentPage = ref(1)
 const hasMoreActivities = ref(true)
+const jobApplications = ref([])
 
 // 计算属性
-const userId = computed(() => route.params.id)
+const userId = computed(() => parseInt(route.params.id))
 const isCurrentUser = computed(() => {
-  return userStore.userInfo?.id === parseInt(userId.value)
+  if (!userStore.isLoggedIn || !userStore.userInfo?.id) return false
+  return parseInt(userStore.userInfo.id) === userId.value
 })
 
 const coverStyle = computed(() => ({
-  backgroundImage: `url(${userInfo.value.cover_url || defaultCover})`
+  backgroundImage: `url(${getFullImageUrl(userInfo.value.cover_url) || defaultCover})`
 }))
 
 const graduationYear = computed(() => {
@@ -268,8 +307,30 @@ const fetchUserData = async () => {
     }
     userInfo.value = res.data
     profile.value = res.data.profile
+    skills.value = res.data.skills || []
+    badges.value = res.data.badges || []
+    
+    // 如果访问他人主页，检查是否已关注
+    if (!isCurrentUser.value && userStore.isLoggedIn) {
+      checkFollowStatus()
+    }
   } catch (error) {
     ElMessage.error('获取用户信息失败')
+  }
+}
+
+const checkFollowStatus = async () => {
+  // 确保已登录且有自己的ID
+  if (!userStore.isLoggedIn || !userStore.userInfo?.id) {
+    return
+  }
+  try {
+    // 获取当前用户的关注列表，检查是否包含该用户
+    const res = await getFollowing(userStore.userInfo.id, { page: 1, per_page: 1000 })
+    const followingList = res.data.items || []
+    isFollowing.value = followingList.some(user => user.id === userId.value)
+  } catch (error) {
+    console.error('获取关注状态失败', error)
   }
 }
 
@@ -279,15 +340,48 @@ const fetchActivities = async () => {
       page: currentPage.value,
       per_page: 10
     })
+    const data = res.data || res
     if (currentPage.value === 1) {
-      activities.value = res.data.items
+      activities.value = data.items || []
     } else {
-      activities.value.push(...res.data.items)
+      activities.value.push(...(data.items || []))
     }
-    hasMoreActivities.value = res.data.items.length === 10
+    hasMoreActivities.value = (data.items || []).length === 10
   } catch (error) {
     console.error('获取动态失败', error)
   }
+}
+
+// 获取投递记录
+const fetchJobApplications = async () => {
+  if (!isCurrentUser.value) return
+  try {
+    const res = await applicationsApi.getMyApplications({ per_page: 20 })
+    const data = res.data || res
+    jobApplications.value = data.items || []
+  } catch (error) {
+    console.error('获取投递记录失败', error)
+  }
+}
+
+// 投递状态样式
+const getStatusType = (status) => {
+  const types = {
+    pending: 'info',
+    accepted: 'success',
+    rejected: 'danger'
+  }
+  return types[status] || 'info'
+}
+
+// 投递状态文本
+const getStatusText = (status) => {
+  const texts = {
+    pending: '待处理',
+    accepted: '已通过',
+    rejected: '未通过'
+  }
+  return texts[status] || status
 }
 
 const handleFollow = async () => {
@@ -345,13 +439,18 @@ const getActivityIcon = (type) => {
 }
 
 const formatActivity = (activity) => {
+  // 如果有具体内容，优先显示
+  if (activity.content) {
+    return activity.content
+  }
+  
   const texts = {
     post: '发布了新动态',
     like: '点赞了内容',
     comment: '发表了评论',
     share: '分享了内容',
     follow: '关注了用户',
-    job_apply: '投递了简历',
+    job_apply: '投递了职位',
     training_enroll: '报名了课程',
     flea_publish: '发布了物品'
   }
@@ -373,6 +472,7 @@ watch(() => route.params.id, () => {
 onMounted(() => {
   fetchUserData()
   fetchActivities()
+  fetchJobApplications()
 })
 </script>
 
@@ -380,6 +480,7 @@ onMounted(() => {
 .profile-page {
   min-height: 100vh;
   background: #f5f7fa;
+  padding-top: 60px; /* 为 fixed 导航栏留出空间 */
 }
 
 .cover-section {
@@ -562,7 +663,23 @@ onMounted(() => {
 .activities-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.activities-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.activities-list::-webkit-scrollbar-thumb {
+  background: #c0c4cc;
+  border-radius: 3px;
+}
+
+.activities-list::-webkit-scrollbar-track {
+  background: #f5f7fa;
 }
 
 .activity-item {
@@ -604,10 +721,70 @@ onMounted(() => {
   margin-top: 20px;
 }
 
+.job-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .job-status {
   padding: 20px;
   background: #f8f9fa;
   border-radius: 8px;
+}
+
+.applications-section h4,
+.job-status h4 {
+  margin: 0 0 16px 0;
+  color: #333;
+}
+
+.applications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.application-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.application-item:hover {
+  background: #f0f2f5;
+}
+
+.app-job-info h5 {
+  margin: 0 0 4px 0;
+  color: #409eff;
+  cursor: pointer;
+}
+
+.app-job-info h5:hover {
+  text-decoration: underline;
+}
+
+.company-name {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}
+
+.app-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.app-time {
+  font-size: 12px;
+  color: #999;
 }
 
 @media (max-width: 768px) {

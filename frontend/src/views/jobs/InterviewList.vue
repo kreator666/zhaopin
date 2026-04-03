@@ -54,8 +54,8 @@
         </el-form-item>
         <el-form-item label="面试结果">
           <el-radio-group v-model="publishForm.result">
-            <el-radio label="offer">获得Offer</el-radio>
-            <el-radio label="rejected">未通过</el-radio>
+            <el-radio value="offer">获得Offer</el-radio>
+            <el-radio value="rejected">未通过</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="经验内容" required>

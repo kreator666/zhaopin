@@ -140,8 +140,9 @@ const fetchJobs = async () => {
       page: searchForm.page,
       per_page: searchForm.per_page
     })
-    jobs.value = res.items
-    total.value = res.total
+    const data = res.data || res
+    jobs.value = data.items || []
+    total.value = data.total || 0
   } catch (error) {
     console.error('获取职位失败', error)
   }

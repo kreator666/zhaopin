@@ -1,5 +1,6 @@
 <template>
   <div class="edit-profile-page">
+    <Navbar />
     <div class="container">
       <el-page-header @back="$router.back()" title="返回个人主页" />
       
@@ -16,9 +17,8 @@
         <el-form-item label="头像">
           <el-upload
             class="avatar-uploader"
-            action="/api/upload/avatar"
+            :http-request="customUpload"
             :show-file-list="false"
-            :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
           >
             <el-avatar 
@@ -205,7 +205,9 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
+import Navbar from '@/components/Navbar.vue'
 import { Plus } from '@element-plus/icons-vue'
+import request from '@/api/request'
 import { getMyProfile, updateProfile, addSkill, deleteSkill as deleteSkillApi } from '@/api/user'
 
 const router = useRouter()
@@ -291,9 +293,25 @@ const fetchUserData = async () => {
 }
 
 // 头像上传
-const handleAvatarSuccess = (response) => {
-  form.value.avatar_url = response.url
-  ElMessage.success('头像上传成功')
+const customUpload = async (options) => {
+  const { file } = options
+  
+  const formData = new FormData()
+  formData.append('file', file)
+  
+  try {
+    const res = await request.post('/api/upload/avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    // 直接设置头像 URL
+    const result = res.data || res
+    form.value.avatar_url = result.url
+    ElMessage.success('头像上传成功')
+  } catch (error) {
+    ElMessage.error('上传失败')
+  }
 }
 
 const beforeAvatarUpload = (file) => {
@@ -382,7 +400,7 @@ onMounted(() => {
 .edit-profile-page {
   min-height: 100vh;
   background: #f5f7fa;
-  padding: 24px 0;
+  padding: 84px 0 24px; /* 顶部增加 60px 为导航栏留出空间 */
 }
 
 .container {

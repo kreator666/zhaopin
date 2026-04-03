@@ -28,7 +28,8 @@ request.interceptors.request.use(
 // 响应拦截器
 request.interceptors.response.use(
   (response) => {
-    return response.data
+    // 包装成 { data: ... } 格式，保持与之前代码兼容
+    return { data: response.data }
   },
   (error) => {
     const message = error.response?.data?.error || '请求失败'
