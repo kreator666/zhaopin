@@ -34,6 +34,7 @@ class User(db.Model):
     student_id = db.Column(db.String(50))        # 学号（用于认证）
     enrollment_year = db.Column(db.Integer)      # 入学年份
     graduation_year = db.Column(db.Integer)      # 毕业年份
+    gender = db.Column(db.String(10))            # 性别
     
     # 【新增】社区活跃度
     reputation = db.Column(db.Integer, default=0)     # 社区声望值
@@ -69,6 +70,7 @@ class User(db.Model):
             'school_name': self.school_name,
             'major': self.major,
             'enrollment_year': self.enrollment_year,
+            'gender': self.gender,
             'graduation_year': self.graduation_year,
             'student_verified': self.student_verified,
             'avatar_url': self.avatar_url,
@@ -307,7 +309,8 @@ class Job(db.Model):
     __tablename__ = 'jobs'
     
     id = db.Column(db.Integer, primary_key=True)
-    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=True)  # 企业发布
+    publisher_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)    # 发布者
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
     requirements = db.Column(db.Text)
@@ -324,11 +327,13 @@ class Job(db.Model):
     
     # 关联
     applications = db.relationship('Application', backref='job', lazy=True)
+    publisher = db.relationship('User', backref='published_jobs', lazy=True)
     
-    def to_dict(self, include_company=False):
+    def to_dict(self, include_company=False, include_publisher=False):
         data = {
             'id': self.id,
             'company_id': self.company_id,
+            'publisher_id': self.publisher_id,
             'title': self.title,
             'description': self.description,
             'requirements': self.requirements,
@@ -345,6 +350,10 @@ class Job(db.Model):
         }
         if include_company and self.company:
             data['company'] = self.company.to_dict()
+        if include_publisher and self.publisher:
+            data['publisher'] = self.publisher.to_dict()
+            if not self.company:
+                data['company_name'] = f"{self.publisher.school_name or ''}·内推".strip('·')
         return data
 
 

@@ -33,6 +33,7 @@ def create_app():
     from routes.training import training_bp
     from routes.social import social_bp
     from routes.circles import circles_bp
+    from routes.alumni import alumni_bp
     from routes.events import events_bp
     from routes.messages import messages_bp
     from routes.flea import flea_bp
@@ -47,6 +48,7 @@ def create_app():
     app.register_blueprint(training_bp, url_prefix='/api/training')
     app.register_blueprint(social_bp, url_prefix='/api/social')
     app.register_blueprint(circles_bp, url_prefix='/api/circles')
+    app.register_blueprint(alumni_bp, url_prefix='/api/alumni')
     app.register_blueprint(events_bp, url_prefix='/api/events')
     app.register_blueprint(messages_bp, url_prefix='/api/messages')
     app.register_blueprint(flea_bp, url_prefix='/api/flea')

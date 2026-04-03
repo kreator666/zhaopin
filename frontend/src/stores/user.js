@@ -31,8 +31,9 @@ export const useUserStore = defineStore('user', () => {
     try {
       loading.value = true
       const res = await authApi.getCurrentUser()
-      userInfo.value = res
-      return res
+      const data = res.data || res
+      userInfo.value = data
+      return data
     } catch (error) {
       logout()
       throw error

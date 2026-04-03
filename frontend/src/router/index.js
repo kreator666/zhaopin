@@ -134,6 +134,12 @@ const routes = [
     component: () => import('@/views/social/CircleList.vue')
   },
   {
+    path: '/social/alumni',
+    name: 'AlumniCircle',
+    component: () => import('@/views/social/AlumniCircle.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/social/circles/:id',
     name: 'CircleDetail',
     component: () => import('@/views/social/CircleDetail.vue')

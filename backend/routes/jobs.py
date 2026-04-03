@@ -55,15 +55,23 @@ def get_job(job_id):
 @jobs_bp.route('', methods=['POST'])
 @jwt_required()
 def create_job():
-    """发布职位（仅企业用户）"""
+    """发布职位（企业用户或认证学生/校友）"""
     user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     
-    if not user or user.role != 'company':
-        return jsonify({'error': '只有企业用户才能发布职位'}), 403
+    if not user:
+        return jsonify({'error': '用户不存在'}), 404
     
-    if not user.company:
+    # 企业用户必须有公司信息
+    if user.role == 'company' and not user.company:
         return jsonify({'error': '请先完善企业信息'}), 400
+    
+    # 学生/校友需要学校认证
+    if user.role in ('student', 'alumni', 'job_seeker'):
+        if not user.student_verified and not user.school_name:
+            return jsonify({'error': '请先完善学校信息'}), 400
+    elif user.role != 'company':
+        return jsonify({'error': '无权发布职位'}), 403
     
     data = request.get_json()
     
@@ -74,7 +82,8 @@ def create_job():
             return jsonify({'error': f'缺少必填字段: {field}'}), 400
     
     job = Job(
-        company_id=user.company.id,
+        company_id=user.company.id if user.role == 'company' else None,
+        publisher_id=user.id,
         title=data['title'],
         description=data['description'],
         requirements=data.get('requirements', ''),

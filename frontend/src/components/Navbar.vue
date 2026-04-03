@@ -38,7 +38,8 @@
           <span class="nav-link">交友社交<el-icon class="dropdown-icon"><ArrowDown /></el-icon></span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item @click="$router.push('/social')">校友圈</el-dropdown-item>
+              <el-dropdown-item @click="$router.push('/social/alumni')">校友圈</el-dropdown-item>
+              <el-dropdown-item @click="$router.push('/social')">动态广场</el-dropdown-item>
               <el-dropdown-item @click="$router.push('/social/circles')">兴趣圈子</el-dropdown-item>
               <el-dropdown-item @click="$router.push('/social/events')">活动约伴</el-dropdown-item>
             </el-dropdown-menu>
