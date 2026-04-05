@@ -29,6 +29,11 @@
             <el-icon><MessageBox /></el-icon>
             <span>收到的简历</span>
           </el-menu-item>
+          
+          <el-menu-item index="/company/campus-talks">
+            <el-icon><School /></el-icon>
+            <span>校园宣讲</span>
+          </el-menu-item>
         </el-menu>
         
         <div class="sidebar-footer">

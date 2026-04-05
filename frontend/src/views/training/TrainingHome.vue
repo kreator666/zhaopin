@@ -1,5 +1,6 @@
 <template>
-  <div class="training-home">
+  <Navbar />
+  <div class="training-home" style="padding-top: 60px;">
     <div class="page-header">
       <h1>培训学习</h1>
       <p>提升技能，成就未来</p>
@@ -33,6 +34,7 @@
 </template>
 
 <script setup>
+import Navbar from '@/components/Navbar.vue'
 import { Reading, Document, Trophy } from '@element-plus/icons-vue'
 </script>
 

@@ -1,4 +1,5 @@
 <template>
+  <Navbar />
   <div class="my-events-page">
     <div class="container">
       <h2>我的活动</h2>
@@ -9,7 +10,11 @@
 </template>
 
 <style scoped>
-.my-events-page { min-height: 100vh; background: #f5f7fa; padding: 40px 0; }
+.my-events-page { min-height: 100vh; background: #f5f7fa; padding: 100px 0 40px; }
 .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; text-align: center; }
 h2 { margin-bottom: 40px; }
 </style>
+
+<script setup>
+import Navbar from '@/components/Navbar.vue'
+</script>

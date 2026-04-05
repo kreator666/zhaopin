@@ -1,6 +1,7 @@
 <template>
   <div class="interview-list-page">
-    <div class="page-header">
+    <Navbar />
+    <div class="page-header" style="margin-top: 60px;">
       <div class="container">
         <h1>面试经验</h1>
         <p>分享和浏览真实的面试经历，助力求职成功</p>
@@ -77,6 +78,7 @@ import { useUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
 import { Edit, Search } from '@element-plus/icons-vue'
 import { getInterviewExperiences, createInterviewExperience } from '@/api/interview'
+import Navbar from '@/components/Navbar.vue'
 
 const router = useRouter()
 const userStore = useUserStore()

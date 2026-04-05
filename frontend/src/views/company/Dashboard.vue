@@ -1,5 +1,7 @@
 <template>
-  <div class="dashboard">
+  <div>
+    <Navbar />
+    <div class="dashboard">
     <h2 class="page-title">企业概览</h2>
     
     <!-- 统计卡片 -->
@@ -134,6 +136,7 @@
       </el-table>
     </el-card>
   </div>
+</div>
 </template>
 
 <script setup>
@@ -143,6 +146,7 @@ import { ElMessage } from 'element-plus'
 import { jobsApi } from '@/api/jobs'
 import { applicationsApi } from '@/api/applications'
 import { Document, MessageBox, CircleCheck, Timer, Plus, ArrowRight, Management, Filter, Phone } from '@element-plus/icons-vue'
+import Navbar from '@/components/Navbar.vue'
 
 const router = useRouter()
 
@@ -223,7 +227,7 @@ onMounted(() => {
 
 <style scoped>
 .dashboard {
-  padding: 0;
+  padding: 60px 0 0;
 }
 
 .page-title {

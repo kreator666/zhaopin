@@ -1,5 +1,6 @@
 <template>
-  <div class="course-list-page">
+  <Navbar />
+  <div class="course-list-page" style="padding-top: 60px;">
     <div class="page-header">
       <div class="container">
         <h1>精品课程</h1>
@@ -15,6 +16,7 @@
 </template>
 
 <script setup>
+import Navbar from '@/components/Navbar.vue'
 import { ref } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 const searchQuery = ref('')

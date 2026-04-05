@@ -1,5 +1,6 @@
 <template>
-  <div class="material-list-page">
+  <Navbar />
+  <div class="material-list-page" style="padding-top: 60px;">
     <div class="page-header">
       <div class="container">
         <h1>学习资料</h1>
@@ -11,6 +12,10 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import Navbar from '@/components/Navbar.vue'
+</script>
 
 <style scoped>
 .material-list-page { min-height: 100vh; background: #f5f7fa; }

@@ -1,5 +1,6 @@
 <template>
-  <div class="my-courses-page">
+  <Navbar />
+  <div class="my-courses-page" style="padding-top: 60px;">
     <div class="container">
       <h2>我的课程</h2>
       <el-empty description="您还没有报名任何课程" />
@@ -7,6 +8,10 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import Navbar from '@/components/Navbar.vue'
+</script>
 
 <style scoped>
 .my-courses-page { min-height: 100vh; background: #f5f7fa; padding: 40px 0; }

@@ -83,6 +83,11 @@ const routes = [
     name: 'CampusTalks',
     component: () => import('@/views/jobs/CampusTalks.vue')
   },
+  {
+    path: '/campus-talks/:id',
+    name: 'CampusTalkDetail',
+    component: () => import('@/views/jobs/CampusTalkDetail.vue')
+  },
   
   // ========== 培训学习模块 ==========
   {
@@ -232,6 +237,11 @@ const routes = [
         path: 'applications',
         name: 'ReceivedApplications',
         component: () => import('@/views/company/Applications.vue')
+      },
+      {
+        path: 'campus-talks',
+        name: 'CompanyCampusTalks',
+        component: () => import('@/views/company/CampusTalks.vue')
       }
     ]
   }

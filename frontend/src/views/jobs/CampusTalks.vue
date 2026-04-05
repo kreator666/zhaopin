@@ -1,6 +1,7 @@
 <template>
   <div class="campus-talks-page">
-    <div class="page-header">
+    <Navbar />
+    <div class="page-header" style="margin-top: 60px;">
       <div class="container">
         <h1>校园宣讲会</h1>
         <p>最新校园招聘信息，不错过每一个机会</p>
@@ -17,7 +18,7 @@
       </div>
 
       <div class="talks-list">
-        <el-card v-for="talk in talks" :key="talk.id" shadow="hover">
+        <el-card v-for="talk in talks" :key="talk.id" shadow="hover" class="talk-card" @click="viewDetail(talk.id)">
           <div class="talk-header">
             <h3>{{ talk.title }}</h3>
             <el-tag :type="statusType(talk.status)">{{ statusText(talk.status) }}</el-tag>
@@ -25,7 +26,7 @@
           <p><el-icon><School /></el-icon> {{ talk.school_name }}</p>
           <p><el-icon><Calendar /></el-icon> {{ formatDateTime(talk.start_time) }}</p>
           <p class="description">{{ talk.description }}</p>
-          <el-button v-if="talk.registration_url && talk.status !== 'ended'" type="success" @click="openRegistration(talk.registration_url)">立即报名</el-button>
+          <el-button v-if="talk.registration_url && talk.status !== 'ended'" type="success" @click.stop="openRegistration(talk.registration_url)">立即报名</el-button>
         </el-card>
         <el-empty v-if="talks.length === 0" description="暂无宣讲会" />
       </div>
@@ -35,10 +36,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { School, Calendar } from '@element-plus/icons-vue'
 import { getCampusTalks } from '@/api/interview'
+import Navbar from '@/components/Navbar.vue'
 
+const router = useRouter()
 const talks = ref([])
 const searchSchool = ref('')
 const filterStatus = ref('')
@@ -52,6 +56,7 @@ const fetchTalks = async () => {
   }
 }
 
+const viewDetail = (id) => router.push(`/campus-talks/${id}`)
 const openRegistration = (url) => window.open(url, '_blank')
 const statusType = (status) => ({ upcoming: 'primary', ongoing: 'success', ended: 'info' }[status] || 'info')
 const statusText = (status) => ({ upcoming: '即将开始', ongoing: '进行中', ended: '已结束' }[status])
@@ -68,6 +73,8 @@ onMounted(fetchTalks)
 .main-content { padding: 30px 0; }
 .filter-bar { display: flex; gap: 16px; margin-bottom: 24px; }
 .talks-list { display: flex; flex-direction: column; gap: 20px; }
+.talk-card { cursor: pointer; transition: all 0.3s; }
+.talk-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 .talk-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
 .talk-header h3 { margin: 0; }
 .description { color: #666; margin: 12px 0; }

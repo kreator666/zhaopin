@@ -1,5 +1,6 @@
 <template>
-  <div class="certifications-page">
+  <Navbar />
+  <div class="certifications-page" style="padding-top: 60px;">
     <div class="page-header">
       <div class="container">
         <h1>考证信息</h1>
@@ -11,6 +12,10 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import Navbar from '@/components/Navbar.vue'
+</script>
 
 <style scoped>
 .certifications-page { min-height: 100vh; background: #f5f7fa; }

@@ -1,21 +1,24 @@
 <template>
-  <div class="interview-detail-page" v-if="experience.id">
-    <div class="container">
-      <el-card shadow="never">
-        <div class="header">
-          <h1>{{ experience.company_name }}</h1>
-          <el-tag :type="resultType(experience.result)" size="large">{{ resultText(experience.result) }}</el-tag>
-        </div>
-        <div class="meta">
-          难度：<el-rate :model-value="experience.difficulty" disabled />
-          <span>{{ formatTime(experience.created_at) }}</span>
-        </div>
-        <div class="content" v-html="formattedContent"></div>
-        <div class="actions">
-          <el-button type="primary" :icon="Star" @click="markHelpful">有帮助 ({{ experience.helpful_count }})</el-button>
-          <el-button :icon="Share" @click="shareExperience">分享</el-button>
-        </div>
-      </el-card>
+  <div>
+    <Navbar />
+    <div class="interview-detail-page" v-if="experience.id" style="padding-top: 60px;">
+      <div class="container">
+        <el-card shadow="never">
+          <div class="header">
+            <h1>{{ experience.company_name }}</h1>
+            <el-tag :type="resultType(experience.result)" size="large">{{ resultText(experience.result) }}</el-tag>
+          </div>
+          <div class="meta">
+            难度：<el-rate :model-value="experience.difficulty" disabled />
+            <span>{{ formatTime(experience.created_at) }}</span>
+          </div>
+          <div class="content" v-html="formattedContent"></div>
+          <div class="actions">
+            <el-button type="primary" :icon="Star" @click="markHelpful">有帮助 ({{ experience.helpful_count }})</el-button>
+            <el-button :icon="Share" @click="shareExperience">分享</el-button>
+          </div>
+        </el-card>
+      </div>
     </div>
   </div>
 </template>
@@ -26,6 +29,7 @@ import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Star, Share } from '@element-plus/icons-vue'
 import { getInterviewExperience, markHelpful as markHelpfulApi } from '@/api/interview'
+import Navbar from '@/components/Navbar.vue'
 
 const route = useRoute()
 const experience = ref({})
@@ -63,7 +67,7 @@ onMounted(fetchExperience)
 </script>
 
 <style scoped>
-.interview-detail-page { min-height: 100vh; background: #f5f7fa; padding: 30px 0; }
+.interview-detail-page { min-height: 100vh; background: #f5f7fa; padding: 60px 0 30px; }
 .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .header h1 { margin: 0; }

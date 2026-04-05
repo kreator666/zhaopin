@@ -1,5 +1,7 @@
 <template>
-  <div class="followers-page">
+  <div>
+    <Navbar />
+    <div class="followers-page">
     <div class="container">
       <h2>{{ pageTitle }}</h2>
       
@@ -83,6 +85,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getFollowers, getFollowing, followUser, unfollowUser } from '@/api/user'
+import Navbar from '@/components/Navbar.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -173,7 +176,7 @@ onMounted(() => {
 .followers-page {
   min-height: 100vh;
   background: #f5f7fa;
-  padding: 24px 0;
+  padding: 60px 0 24px;
 }
 
 .container {

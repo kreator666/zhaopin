@@ -1,5 +1,7 @@
 <template>
-  <div class="favorites-page">
+  <div>
+    <Navbar />
+    <div class="favorites-page">
     <div class="container">
       <h2>我的收藏</h2>
       
@@ -73,6 +75,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import Navbar from '@/components/Navbar.vue'
 
 const router = useRouter()
 const activeTab = ref('jobs')
@@ -106,7 +109,7 @@ onMounted(() => {
 .favorites-page {
   min-height: 100vh;
   background: #f5f7fa;
-  padding: 24px 0;
+  padding: 60px 0 24px;
 }
 
 .container {

@@ -172,11 +172,27 @@
               </div>
             </el-tab-pane>
 
-            <el-tab-pane label="帖子" name="posts">
-              <el-empty description="暂无帖子" />
+            <!-- 兴趣圈子 - 显示用户参与的圈子话题 -->
+            <el-tab-pane label="兴趣圈子" name="circles">
+              <div class="circles-section">
+                <div v-if="userCircles.length > 0" class="circles-list">
+                  <div v-for="circle in userCircles" :key="circle.id" class="circle-item" @click="$router.push(`/social/circles/${circle.id}`)">
+                    <el-avatar :size="50" :src="circle.icon_url" />
+                    <div class="circle-info">
+                      <h4>{{ circle.name }}</h4>
+                      <p>{{ circle.description }}</p>
+                      <span class="member-count">{{ circle.member_count }} 成员</span>
+                    </div>
+                  </div>
+                </div>
+                <el-empty v-else description="暂无参与的兴趣圈子">
+                  <el-button type="primary" @click="$router.push('/social/circles')">去发现圈子</el-button>
+                </el-empty>
+              </div>
             </el-tab-pane>
 
-            <el-tab-pane label="求职" name="jobs" v-if="userInfo.role === 'student' || userInfo.role === 'job_seeker' || userInfo.role === 'alumni'">
+            <!-- 求职 - 仅自己可见 -->
+            <el-tab-pane label="求职" name="jobs" v-if="isCurrentUser && (userInfo.role === 'student' || userInfo.role === 'job_seeker' || userInfo.role === 'alumni')">
               <div class="job-section">
                 <!-- 求职意向 -->
                 <div class="job-status" v-if="profile">
@@ -191,7 +207,7 @@
                 </div>
                 
                 <!-- 投递记录 -->
-                <div class="applications-section" v-if="isCurrentUser">
+                <div class="applications-section">
                   <h4>投递记录</h4>
                   <div class="applications-list" v-if="jobApplications.length > 0">
                     <div v-for="app in jobApplications" :key="app.id" class="application-item">
@@ -212,8 +228,34 @@
               </div>
             </el-tab-pane>
 
-            <el-tab-pane label="收藏" name="favorites" v-if="isCurrentUser">
-              <el-empty description="暂无收藏" />
+            <!-- 活动约伴 - 显示参加或组织的活动 -->
+            <el-tab-pane label="活动约伴" name="events" v-if="isCurrentUser">
+              <div class="events-section">
+                <div v-if="userEvents.length > 0" class="events-list">
+                  <div v-for="event in userEvents" :key="event.id" class="event-item" @click="$router.push(`/social/events/${event.id}`)">
+                    <div class="event-image" v-if="event.cover_image">
+                      <img :src="getFullImageUrl(event.cover_image)" alt="" />
+                    </div>
+                    <div class="event-info">
+                      <h4>{{ event.title }}</h4>
+                      <p class="event-time">
+                        <el-icon><Calendar /></el-icon>
+                        {{ formatTime(event.start_time) }}
+                      </p>
+                      <p class="event-location">
+                        <el-icon><Location /></el-icon>
+                        {{ event.location }}
+                      </p>
+                      <el-tag :type="event.is_organizer ? 'success' : 'primary'" size="small">
+                        {{ event.is_organizer ? '组织者' : '参与者' }}
+                      </el-tag>
+                    </div>
+                  </div>
+                </div>
+                <el-empty v-else description="暂无参加的活动">
+                  <el-button type="primary" @click="$router.push('/social/events')">去发现活动</el-button>
+                </el-empty>
+              </div>
             </el-tab-pane>
           </el-tabs>
         </el-col>
@@ -247,6 +289,7 @@ import {
 import Navbar from '@/components/Navbar.vue'
 import { getUserProfile, getMyProfile, followUser, unfollowUser, getUserActivities, getFollowing } from '@/api/user'
 import { applicationsApi } from '@/api/applications'
+import { socialApi } from '@/api/social'
 
 const route = useRoute()
 const router = useRouter()
@@ -274,6 +317,8 @@ const activeTab = ref('activities')
 const currentPage = ref(1)
 const hasMoreActivities = ref(true)
 const jobApplications = ref([])
+const userCircles = ref([])
+const userEvents = ref([])
 
 // 计算属性
 const userId = computed(() => parseInt(route.params.id))
@@ -361,6 +406,29 @@ const fetchJobApplications = async () => {
     jobApplications.value = data.items || []
   } catch (error) {
     console.error('获取投递记录失败', error)
+  }
+}
+
+// 获取用户参与的兴趣圈子
+const fetchUserCircles = async () => {
+  try {
+    const res = await socialApi.getMyCircles()
+    const data = res.data || res
+    userCircles.value = data.items || []
+  } catch (error) {
+    console.error('获取兴趣圈子失败', error)
+  }
+}
+
+// 获取用户参加/组织的活动
+const fetchUserEvents = async () => {
+  if (!isCurrentUser.value) return
+  try {
+    const res = await socialApi.getMyEvents()
+    const data = res.data || res
+    userEvents.value = data.items || []
+  } catch (error) {
+    console.error('获取活动列表失败', error)
   }
 }
 
@@ -473,6 +541,8 @@ onMounted(() => {
   fetchUserData()
   fetchActivities()
   fetchJobApplications()
+  fetchUserCircles()
+  fetchUserEvents()
 })
 </script>
 
@@ -785,6 +855,113 @@ onMounted(() => {
 .app-time {
   font-size: 12px;
   color: #999;
+}
+
+/* 兴趣圈子样式 */
+.circles-section {
+  padding: 16px 0;
+}
+
+.circles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.circle-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.circle-item:hover {
+  background: #e6f2ff;
+}
+
+.circle-info {
+  flex: 1;
+}
+
+.circle-info h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+}
+
+.circle-info p {
+  margin: 0 0 4px 0;
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.circle-info .member-count {
+  font-size: 12px;
+  color: #909399;
+}
+
+/* 活动约伴样式 */
+.events-section {
+  padding: 16px 0;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.event-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.event-item:hover {
+  background: #e6f2ff;
+}
+
+.event-image {
+  width: 120px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.event-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.event-info {
+  flex: 1;
+}
+
+.event-info h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+}
+
+.event-time,
+.event-location {
+  margin: 4px 0;
+  font-size: 13px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 @media (max-width: 768px) {

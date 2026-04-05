@@ -1,5 +1,7 @@
 <template>
-  <div class="job-form-page">
+  <div>
+    <Navbar />
+    <div class="job-form-page">
     <div class="page-header">
       <h2>{{ isEdit ? '编辑职位' : '发布职位' }}</h2>
     </div>
@@ -83,6 +85,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { jobsApi } from '@/api/jobs'
+import Navbar from '@/components/Navbar.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -160,6 +163,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.job-form-page {
+  padding-top: 60px;
+}
+
 .page-header {
   margin-bottom: 20px;
 }

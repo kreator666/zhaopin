@@ -1,5 +1,7 @@
 <template>
-  <div class="received-applications">
+  <div>
+    <Navbar />
+    <div class="received-applications">
     <div class="page-header">
       <h2>收到的简历</h2>
     </div>
@@ -78,6 +80,7 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { applicationsApi } from '@/api/applications'
+import Navbar from '@/components/Navbar.vue'
 
 const applications = ref([])
 const page = ref(1)
@@ -141,6 +144,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.received-applications {
+  padding-top: 60px;
+}
+
 .page-header {
   margin-bottom: 20px;
 }

@@ -1,5 +1,7 @@
 <template>
-  <div class="company-jobs">
+  <div>
+    <Navbar />
+    <div class="company-jobs">
     <div class="page-header">
       <h2>职位管理</h2>
       <el-button type="primary" @click="goToCreate">
@@ -72,6 +74,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { jobsApi } from '@/api/jobs'
+import Navbar from '@/components/Navbar.vue'
 
 const router = useRouter()
 
@@ -152,6 +155,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.company-jobs {
+  padding-top: 60px;
+}
+
 .page-header {
   display: flex;
   justify-content: space-between;

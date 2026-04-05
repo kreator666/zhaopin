@@ -56,6 +56,11 @@ export const socialApi = {
     return request.get('/api/circles', { params })
   },
   
+  // 获取我加入的圈子
+  getMyCircles() {
+    return request.get('/api/circles/my')
+  },
+  
   // 获取圈子详情
   getCircleDetail(circleId) {
     return request.get(`/api/circles/${circleId}`)
@@ -74,6 +79,11 @@ export const socialApi = {
   // 获取活动列表
   getEvents(params = {}) {
     return request.get('/api/events', { params })
+  },
+  
+  // 获取我的活动（参加或组织）
+  getMyEvents() {
+    return request.get('/api/events/my')
   },
   
   // 获取活动详情
