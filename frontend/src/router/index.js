@@ -155,9 +155,21 @@ const routes = [
     component: () => import('@/views/social/EventList.vue')
   },
   {
+    path: '/social/events/create',
+    name: 'CreateEvent',
+    component: () => import('@/views/social/CreateEvent.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/social/events/:id',
     name: 'EventDetail',
     component: () => import('@/views/social/EventDetail.vue')
+  },
+  {
+    path: '/social/events/:id/edit',
+    name: 'EditEvent',
+    component: () => import('@/views/social/CreateEvent.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/social/my-events',

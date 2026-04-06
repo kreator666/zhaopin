@@ -834,7 +834,7 @@ class SocialEvent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text)
-    event_type = db.Column(db.String(50))        # study, sport, travel, meal, game, movie
+    event_type = db.Column(db.String(50))        # sports, study, dining, travel, game, party, other
     
     creator_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     
@@ -848,7 +848,13 @@ class SocialEvent(db.Model):
     max_participants = db.Column(db.Integer)
     current_participants = db.Column(db.Integer, default=0)
     
-    status = db.Column(db.String(20), default='open')  # open, full, ended, cancelled
+    # 新增字段
+    cover_image = db.Column(db.String(500))      # 活动封面图
+    fee_type = db.Column(db.String(20), default='free')  # free, aa, fixed
+    fee_amount = db.Column(db.Integer, default=0)  # 费用金额（分）
+    view_count = db.Column(db.Integer, default=0)  # 浏览次数
+    
+    status = db.Column(db.String(20), default='open')  # open, full, ongoing, ended, cancelled
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     creator = db.relationship('User', backref='created_events', lazy=True)
@@ -860,10 +866,16 @@ class SocialEvent(db.Model):
             'description': self.description,
             'event_type': self.event_type,
             'location': self.location,
+            'location_lat': self.location_lat,
+            'location_lng': self.location_lng,
             'start_time': self.start_time.isoformat() if self.start_time else None,
             'end_time': self.end_time.isoformat() if self.end_time else None,
             'max_participants': self.max_participants,
             'current_participants': self.current_participants,
+            'cover_image': self.cover_image,
+            'fee_type': self.fee_type,
+            'fee_amount': self.fee_amount,
+            'view_count': self.view_count,
             'status': self.status,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
@@ -886,6 +898,99 @@ class EventParticipant(db.Model):
     
     event = db.relationship('SocialEvent', backref='participants', lazy=True)
     user = db.relationship('User', backref='event_participations', lazy=True)
+
+
+class EventComment(db.Model):
+    """活动评论"""
+    __tablename__ = 'event_comments'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('social_events.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey('event_comments.id'))  # 楼中楼回复
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    event = db.relationship('SocialEvent', backref='comments', lazy=True)
+    user = db.relationship('User', backref='event_comments', lazy=True)
+    parent = db.relationship('EventComment', remote_side=[id], backref='replies', lazy=True)
+    
+    def to_dict(self, include_user=False):
+        data = {
+            'id': self.id,
+            'event_id': self.event_id,
+            'user_id': self.user_id,
+            'parent_id': self.parent_id,
+            'content': self.content,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+        if include_user and self.user:
+            data['user'] = self.user.to_dict()
+        return data
+
+
+class EventCheckIn(db.Model):
+    """活动签到"""
+    __tablename__ = 'event_checkins'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('social_events.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    checked_in_at = db.Column(db.DateTime, default=datetime.utcnow)
+    check_in_method = db.Column(db.String(20), default='manual')  # manual, qrcode
+    
+    __table_args__ = (db.UniqueConstraint('event_id', 'user_id', name='unique_event_checkin'),)
+    
+    event = db.relationship('SocialEvent', backref='checkins', lazy=True)
+    user = db.relationship('User', backref='event_checkins', lazy=True)
+    
+    def to_dict(self, include_user=False):
+        data = {
+            'id': self.id,
+            'event_id': self.event_id,
+            'user_id': self.user_id,
+            'checked_in_at': self.checked_in_at.isoformat() if self.checked_in_at else None,
+            'check_in_method': self.check_in_method
+        }
+        if include_user and self.user:
+            data['user'] = self.user.to_dict()
+        return data
+
+
+class EventReview(db.Model):
+    """活动评价"""
+    __tablename__ = 'event_reviews'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('social_events.id'), nullable=False)
+    reviewer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    reviewee_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)  # 1-5星
+    content = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (db.UniqueConstraint('event_id', 'reviewer_id', 'reviewee_id', name='unique_event_review'),)
+    
+    event = db.relationship('SocialEvent', backref='reviews', lazy=True)
+    reviewer = db.relationship('User', foreign_keys=[reviewer_id], backref='reviews_given', lazy=True)
+    reviewee = db.relationship('User', foreign_keys=[reviewee_id], backref='reviews_received', lazy=True)
+    
+    def to_dict(self, include_users=False):
+        data = {
+            'id': self.id,
+            'event_id': self.event_id,
+            'reviewer_id': self.reviewer_id,
+            'reviewee_id': self.reviewee_id,
+            'rating': self.rating,
+            'content': self.content,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+        if include_users:
+            if self.reviewer:
+                data['reviewer'] = self.reviewer.to_dict()
+            if self.reviewee:
+                data['reviewee'] = self.reviewee.to_dict()
+        return data
 
 
 class PrivateMessage(db.Model):

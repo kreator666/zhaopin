@@ -135,6 +135,104 @@ export const socialApi = {
   // 获取所有标签
   getTags() {
     return request.get('/api/topics/tags')
+  },
+  
+  // ========== 活动约伴 ==========
+  // 获取活动列表
+  getEvents(params = {}) {
+    return request.get('/api/events', { params })
+  },
+  
+  // 获取活动类型
+  getEventTypes() {
+    return request.get('/api/events/types')
+  },
+  
+  // 创建活动
+  createEvent(data) {
+    return request.post('/api/events', data)
+  },
+  
+  // 获取活动详情
+  getEvent(eventId) {
+    return request.get(`/api/events/${eventId}`)
+  },
+  
+  // 更新活动
+  updateEvent(eventId, data) {
+    return request.put(`/api/events/${eventId}`, data)
+  },
+  
+  // 删除活动
+  deleteEvent(eventId) {
+    return request.delete(`/api/events/${eventId}`)
+  },
+  
+  // 参加活动
+  joinEvent(eventId) {
+    return request.post(`/api/events/${eventId}/join`)
+  },
+  
+  // 退出活动
+  leaveEvent(eventId) {
+    return request.post(`/api/events/${eventId}/leave`)
+  },
+  
+  // 获取活动参与者
+  getEventParticipants(eventId) {
+    return request.get(`/api/events/${eventId}/participants`)
+  },
+  
+  // 获取活动评论
+  getEventComments(eventId) {
+    return request.get(`/api/events/${eventId}/comments`)
+  },
+  
+  // 发表评论
+  createEventComment(eventId, data) {
+    return request.post(`/api/events/${eventId}/comments`, data)
+  },
+  
+  // 删除评论
+  deleteEventComment(commentId) {
+    return request.delete(`/api/events/comments/${commentId}`)
+  },
+  
+  // 获取我的活动
+  getMyEvents(type = 'joined') {
+    return request.get('/api/events/my', { params: { type } })
+  },
+  
+  // ========== 活动签到 ==========
+  // 签到
+  checkInEvent(eventId, data) {
+    return request.post(`/api/events/${eventId}/checkin`, data)
+  },
+  
+  // 获取签到状态
+  getCheckInStatus(eventId) {
+    return request.get(`/api/events/${eventId}/checkin/status`)
+  },
+  
+  // 获取签到列表（创建者）
+  getCheckInList(eventId) {
+    return request.get(`/api/events/${eventId}/checkins`)
+  },
+  
+  // ========== 活动评价 ==========
+  // 获取评价列表
+  getEventReviews(eventId) {
+    return request.get(`/api/events/${eventId}/reviews`)
+  },
+  
+  // 发表评价
+  createEventReview(eventId, data) {
+    return request.post(`/api/events/${eventId}/reviews`, data)
+  },
+  
+  // 获取待评价列表
+  getPendingReviews(eventId) {
+    return request.get(`/api/events/${eventId}/reviews/pending`)
   }
 }
 
