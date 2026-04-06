@@ -236,16 +236,6 @@ const routes = [
         component: () => import('@/views/company/Jobs.vue')
       },
       {
-        path: 'jobs/create',
-        name: 'CreateJob',
-        component: () => import('@/views/company/JobForm.vue')
-      },
-      {
-        path: 'jobs/edit/:id',
-        name: 'EditJob',
-        component: () => import('@/views/company/JobForm.vue')
-      },
-      {
         path: 'applications',
         name: 'ReceivedApplications',
         component: () => import('@/views/company/Applications.vue')
@@ -256,6 +246,26 @@ const routes = [
         component: () => import('@/views/company/CampusTalks.vue')
       }
     ]
+  },
+  
+  // 发布/编辑职位（学生、校友、企业均可访问）
+  {
+    path: '/jobs/publish',
+    name: 'PublishJob',
+    component: () => import('@/views/company/JobForm.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/jobs/edit/:id',
+    name: 'EditJob',
+    component: () => import('@/views/company/JobForm.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/jobs/my',
+    name: 'MyJobs',
+    component: () => import('@/views/jobs/MyJobs.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

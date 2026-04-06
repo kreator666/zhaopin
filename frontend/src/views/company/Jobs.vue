@@ -67,6 +67,7 @@
       </div>
     </el-card>
   </div>
+  </div>
 </template>
 
 <script setup>
@@ -113,11 +114,11 @@ const fetchJobs = async () => {
 }
 
 const goToCreate = () => {
-  router.push('/company/jobs/create')
+  router.push('/jobs/publish')
 }
 
 const goToEdit = (id) => {
-  router.push(`/company/jobs/edit/${id}`)
+  router.push(`/jobs/edit/${id}`)
 }
 
 const toggleStatus = async (row) => {

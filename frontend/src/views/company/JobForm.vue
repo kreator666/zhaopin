@@ -78,6 +78,7 @@
       </el-form>
     </el-card>
   </div>
+  </div>
 </template>
 
 <script setup>
@@ -126,7 +127,7 @@ const fetchJobDetail = async () => {
   } catch (error) {
     console.error('获取职位详情失败', error)
     ElMessage.error('职位不存在')
-    router.push('/company/jobs')
+    router.push('/jobs/my')
   } finally {
     loading.value = false
   }
@@ -145,7 +146,7 @@ const handleSubmit = async () => {
       await jobsApi.create(form)
       ElMessage.success('职位发布成功')
     }
-    router.push('/company/jobs')
+    router.push('/jobs/my')
   } catch (error) {
     console.error('提交失败', error)
   } finally {
@@ -154,7 +155,7 @@ const handleSubmit = async () => {
 }
 
 const goBack = () => {
-  router.push('/company/jobs')
+  router.push('/jobs/my')
 }
 
 onMounted(() => {

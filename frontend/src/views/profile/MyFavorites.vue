@@ -70,6 +70,7 @@
       </el-tabs>
     </div>
   </div>
+  </div>
 </template>
 
 <script setup>

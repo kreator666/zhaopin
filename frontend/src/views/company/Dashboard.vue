@@ -189,7 +189,7 @@ const fetchStats = async () => {
 }
 
 const goToCreateJob = () => {
-  router.push('/company/jobs/create')
+  router.push('/jobs/publish')
 }
 
 const goToJobs = () => {
