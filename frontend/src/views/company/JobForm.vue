@@ -127,7 +127,7 @@ const fetchJobDetail = async () => {
   } catch (error) {
     console.error('获取职位详情失败', error)
     ElMessage.error('职位不存在')
-    router.push('/jobs/my')
+    router.push('/company/jobs')
   } finally {
     loading.value = false
   }
@@ -146,7 +146,7 @@ const handleSubmit = async () => {
       await jobsApi.create(form)
       ElMessage.success('职位发布成功')
     }
-    router.push('/jobs/my')
+    router.push('/company/jobs')
   } catch (error) {
     console.error('提交失败', error)
   } finally {
@@ -155,7 +155,7 @@ const handleSubmit = async () => {
 }
 
 const goBack = () => {
-  router.push('/jobs/my')
+  router.push('/company/jobs')
 }
 
 onMounted(() => {

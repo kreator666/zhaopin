@@ -85,12 +85,6 @@
                 <el-dropdown-item @click="$router.push('/applications')" v-if="userStore.isPersonalUser">
                   <el-icon><Document /></el-icon>投递记录
                 </el-dropdown-item>
-                <el-dropdown-item @click="$router.push('/jobs/publish')" v-if="userStore.isPersonalUser">
-                  <el-icon><Plus /></el-icon>发布职位
-                </el-dropdown-item>
-                <el-dropdown-item @click="$router.push('/jobs/my')" v-if="userStore.isPersonalUser">
-                  <el-icon><Management /></el-icon>我的职位
-                </el-dropdown-item>
                 <el-dropdown-item @click="$router.push('/training/my-courses')">
                   <el-icon><Reading /></el-icon>我的课程
                 </el-dropdown-item>
@@ -118,7 +112,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Connection, ArrowDown, User, Edit, Star, Document, Reading, Goods, SwitchButton, Bell, Plus, Management } from '@element-plus/icons-vue'
+import { Connection, ArrowDown, User, Edit, Star, Document, Reading, Goods, SwitchButton, Bell } from '@element-plus/icons-vue'
 import { getUnreadCount } from '@/api/social'
 
 const userStore = useUserStore()

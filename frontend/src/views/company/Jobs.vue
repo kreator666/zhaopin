@@ -114,11 +114,11 @@ const fetchJobs = async () => {
 }
 
 const goToCreate = () => {
-  router.push('/jobs/publish')
+  router.push('/company/jobs/create')
 }
 
 const goToEdit = (id) => {
-  router.push(`/jobs/edit/${id}`)
+  router.push(`/company/jobs/edit/${id}`)
 }
 
 const toggleStatus = async (row) => {

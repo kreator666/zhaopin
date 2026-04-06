@@ -159,18 +159,25 @@ def delete_job(job_id):
 @jobs_bp.route('/my', methods=['GET'])
 @jwt_required()
 def get_my_jobs():
-    """获取我发布的职位"""
+    """获取我发布的职位（企业用户）"""
     user_id = int(get_jwt_identity())
+    user = User.query.get(user_id)
+    
+    if not user or user.role != 'company':
+        return jsonify({'error': '只有企业用户才能查看'}), 403
+    
+    if not user.company:
+        return jsonify({'items': [], 'total': 0})
     
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
     
-    pagination = Job.query.filter_by(publisher_id=user_id)\
+    pagination = Job.query.filter_by(company_id=user.company.id)\
         .order_by(Job.created_at.desc())\
         .paginate(page=page, per_page=per_page, error_out=False)
     
     return jsonify({
-        'items': [job.to_dict(include_company=True) for job in pagination.items],
+        'items': [job.to_dict() for job in pagination.items],
         'total': pagination.total,
         'pages': pagination.pages,
         'current_page': page
