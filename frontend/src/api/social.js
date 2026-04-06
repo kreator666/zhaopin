@@ -51,31 +51,6 @@ export const socialApi = {
     return request.delete(`/api/social/posts/${postId}/comments/${commentId}`)
   },
   
-  // 获取圈子列表
-  getCircles(params = {}) {
-    return request.get('/api/circles', { params })
-  },
-  
-  // 获取我加入的圈子
-  getMyCircles() {
-    return request.get('/api/circles/my')
-  },
-  
-  // 获取圈子详情
-  getCircleDetail(circleId) {
-    return request.get(`/api/circles/${circleId}`)
-  },
-  
-  // 加入圈子
-  joinCircle(circleId) {
-    return request.post(`/api/circles/${circleId}/join`)
-  },
-  
-  // 退出圈子
-  leaveCircle(circleId) {
-    return request.post(`/api/circles/${circleId}/leave`)
-  },
-  
   // 获取活动列表
   getEvents(params = {}) {
     return request.get('/api/events', { params })
@@ -99,6 +74,67 @@ export const socialApi = {
   // 取消报名
   leaveEvent(eventId) {
     return request.post(`/api/events/${eventId}/leave`)
+  },
+  
+  // ========== 兴趣话题 ==========
+  // 获取话题列表
+  getTopics(params = {}) {
+    return request.get('/api/topics', { params })
+  },
+  
+  // 创建话题
+  createTopic(data) {
+    return request.post('/api/topics', data)
+  },
+  
+  // 获取话题详情
+  getTopic(topicId) {
+    return request.get(`/api/topics/${topicId}`)
+  },
+  
+  // 更新话题
+  updateTopic(topicId, data) {
+    return request.put(`/api/topics/${topicId}`, data)
+  },
+  
+  // 删除话题
+  deleteTopic(topicId) {
+    return request.delete(`/api/topics/${topicId}`)
+  },
+  
+  // 关闭话题
+  closeTopic(topicId) {
+    return request.post(`/api/topics/${topicId}/close`)
+  },
+  
+  // 标记已解决
+  solveTopic(topicId) {
+    return request.post(`/api/topics/${topicId}/solve`)
+  },
+  
+  // 获取话题回复
+  getTopicReplies(topicId) {
+    return request.get(`/api/topics/${topicId}/replies`)
+  },
+  
+  // 发表回复
+  createTopicReply(topicId, data) {
+    return request.post(`/api/topics/${topicId}/replies`, data)
+  },
+  
+  // 删除回复
+  deleteTopicReply(replyId) {
+    return request.delete(`/api/topics/replies/${replyId}`)
+  },
+  
+  // 采纳最佳答案
+  acceptTopicReply(replyId) {
+    return request.post(`/api/topics/replies/${replyId}/accept`)
+  },
+  
+  // 获取所有标签
+  getTags() {
+    return request.get('/api/topics/tags')
   }
 }
 

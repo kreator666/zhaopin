@@ -135,19 +135,13 @@ const routes = [
   },
   {
     path: '/social/circles',
-    name: 'CircleList',
-    component: () => import('@/views/social/CircleList.vue')
+    name: 'TopicList',
+    component: () => import('@/views/social/TopicList.vue')
   },
   {
-    path: '/social/alumni',
-    name: 'AlumniCircle',
-    component: () => import('@/views/social/AlumniCircle.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/social/circles/:id',
-    name: 'CircleDetail',
-    component: () => import('@/views/social/CircleDetail.vue')
+    path: '/social/topics/:id',
+    name: 'TopicDetail',
+    component: () => import('@/views/social/TopicDetail.vue')
   },
   {
     path: '/social/events',

@@ -172,21 +172,22 @@
               </div>
             </el-tab-pane>
 
-            <!-- 兴趣圈子 - 显示用户参与的圈子话题 -->
-            <el-tab-pane label="兴趣圈子" name="circles">
-              <div class="circles-section">
-                <div v-if="userCircles.length > 0" class="circles-list">
-                  <div v-for="circle in userCircles" :key="circle.id" class="circle-item" @click="$router.push(`/social/circles/${circle.id}`)">
-                    <el-avatar :size="50" :src="circle.icon_url" />
-                    <div class="circle-info">
-                      <h4>{{ circle.name }}</h4>
-                      <p>{{ circle.description }}</p>
-                      <span class="member-count">{{ circle.member_count }} 成员</span>
+            <!-- 兴趣话题 - 显示用户发布的话题 -->
+            <el-tab-pane label="兴趣话题" name="topics">
+              <div class="topics-section">
+                <div v-if="userTopics.length > 0" class="user-topics-list">
+                  <div v-for="topic in userTopics" :key="topic.id" class="user-topic-item" @click="$router.push(`/social/topics/${topic.id}`)">
+                    <h4>{{ topic.title }}</h4>
+                    <p class="topic-excerpt">{{ topic.content?.substring(0, 100) }}...</p>
+                    <div class="topic-meta">
+                      <span><el-icon><View /></el-icon> {{ topic.view_count || 0 }}</span>
+                      <span><el-icon><ChatDotRound /></el-icon> {{ topic.reply_count || 0 }}</span>
+                      <span>{{ formatTime(topic.created_at) }}</span>
                     </div>
                   </div>
                 </div>
-                <el-empty v-else description="暂无参与的兴趣圈子">
-                  <el-button type="primary" @click="$router.push('/social/circles')">去发现圈子</el-button>
+                <el-empty v-else description="暂无发布的话题">
+                  <el-button type="primary" @click="$router.push('/social/circles')">去发布话题</el-button>
                 </el-empty>
               </div>
             </el-tab-pane>
@@ -284,7 +285,8 @@ import {
   User,
   Collection,
   Trophy,
-  ShoppingBag
+  ShoppingBag,
+  View
 } from '@element-plus/icons-vue'
 import Navbar from '@/components/Navbar.vue'
 import { getUserProfile, getMyProfile, followUser, unfollowUser, getUserActivities, getFollowing } from '@/api/user'
@@ -317,7 +319,7 @@ const activeTab = ref('activities')
 const currentPage = ref(1)
 const hasMoreActivities = ref(true)
 const jobApplications = ref([])
-const userCircles = ref([])
+const userTopics = ref([])
 const userEvents = ref([])
 
 // 计算属性
@@ -409,14 +411,14 @@ const fetchJobApplications = async () => {
   }
 }
 
-// 获取用户参与的兴趣圈子
-const fetchUserCircles = async () => {
+// 获取用户发布的兴趣话题
+const fetchUserTopics = async () => {
   try {
-    const res = await socialApi.getMyCircles()
+    const res = await socialApi.getTopics({ user_id: userId.value, per_page: 100 })
     const data = res.data || res
-    userCircles.value = data.items || []
+    userTopics.value = (data.items || []).filter(t => t.user_id === userId.value)
   } catch (error) {
-    console.error('获取兴趣圈子失败', error)
+    console.error('获取兴趣话题失败', error)
   }
 }
 
@@ -541,7 +543,7 @@ onMounted(() => {
   fetchUserData()
   fetchActivities()
   fetchJobApplications()
-  fetchUserCircles()
+  fetchUserTopics()
   fetchUserEvents()
 })
 </script>
@@ -857,21 +859,18 @@ onMounted(() => {
   color: #999;
 }
 
-/* 兴趣圈子样式 */
-.circles-section {
+/* 兴趣话题样式 */
+.topics-section {
   padding: 16px 0;
 }
 
-.circles-list {
+.user-topics-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.circle-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+.user-topic-item {
   padding: 16px;
   background: #f8f9fa;
   border-radius: 8px;
@@ -879,21 +878,18 @@ onMounted(() => {
   transition: all 0.3s;
 }
 
-.circle-item:hover {
+.user-topic-item:hover {
   background: #e6f2ff;
 }
 
-.circle-info {
-  flex: 1;
-}
-
-.circle-info h4 {
-  margin: 0 0 4px 0;
+.user-topic-item h4 {
+  margin: 0 0 8px 0;
   font-size: 16px;
+  color: #333;
 }
 
-.circle-info p {
-  margin: 0 0 4px 0;
+.user-topic-item .topic-excerpt {
+  margin: 0 0 12px 0;
   font-size: 13px;
   color: #666;
   white-space: nowrap;
@@ -901,9 +897,17 @@ onMounted(() => {
   text-overflow: ellipsis;
 }
 
-.circle-info .member-count {
+.user-topic-item .topic-meta {
+  display: flex;
+  gap: 16px;
   font-size: 12px;
   color: #909399;
+}
+
+.user-topic-item .topic-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* 活动约伴样式 */

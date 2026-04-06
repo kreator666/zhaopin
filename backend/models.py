@@ -790,7 +790,7 @@ class SocialCircle(db.Model):
             'icon_url': self.icon_url,
             'cover_url': self.cover_url,
             'member_count': self.member_count,
-            'post_count': self.post_count,
+            'topic_count': len(self.topics) if hasattr(self, 'topics') else 0,
             'is_public': self.is_public,
             'need_approval': self.need_approval,
             'created_at': self.created_at.isoformat() if self.created_at else None
@@ -1005,6 +1005,92 @@ class FleaWanted(db.Model):
             'category': self.category,
             'max_price': self.max_price,
             'status': self.status,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+        if include_user and self.user:
+            data['user'] = self.user.to_dict()
+        return data
+
+
+# ==========================================
+# 兴趣圈子话题模块
+# ==========================================
+
+class Topic(db.Model):
+    """兴趣话题/帖子"""
+    __tablename__ = 'topics'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text)
+    tags = db.Column(db.JSON)  # 标签数组 ["求职", "内推"]
+    
+    visibility = db.Column(db.String(20), default='public')  # public(全站)/school_only(仅本校)
+    status = db.Column(db.String(20), default='open')  # open(开放)/closed(已关闭)/solved(已解决)
+    
+    is_pinned = db.Column(db.Boolean, default=False)
+    view_count = db.Column(db.Integer, default=0)
+    reply_count = db.Column(db.Integer, default=0)
+    like_count = db.Column(db.Integer, default=0)
+    last_reply_at = db.Column(db.DateTime)
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # 关联
+    user = db.relationship('User', backref='topics', lazy=True)
+    
+    def to_dict(self, include_user=False):
+        data = {
+            'id': self.id,
+            'user_id': self.user_id,
+            'title': self.title,
+            'content': self.content,
+            'tags': self.tags or [],
+            'visibility': self.visibility,
+            'status': self.status,
+            'is_pinned': self.is_pinned,
+            'view_count': self.view_count,
+            'reply_count': self.reply_count,
+            'like_count': self.like_count,
+            'last_reply_at': self.last_reply_at.isoformat() if self.last_reply_at else None,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
+        }
+        if include_user and self.user:
+            data['user'] = self.user.to_dict()
+        return data
+
+
+class TopicReply(db.Model):
+    """话题回复"""
+    __tablename__ = 'topic_replies'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    topic_id = db.Column(db.Integer, db.ForeignKey('topics.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey('topic_replies.id'))  # 楼中楼
+    
+    content = db.Column(db.Text, nullable=False)
+    is_accepted = db.Column(db.Boolean, default=False)  # 是否被采纳为最佳答案
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # 关联
+    topic = db.relationship('Topic', backref='replies', lazy=True)
+    user = db.relationship('User', backref='replies', lazy=True)
+    parent = db.relationship('TopicReply', remote_side=[id], backref='children', lazy=True)
+    
+    def to_dict(self, include_user=False):
+        data = {
+            'id': self.id,
+            'topic_id': self.topic_id,
+            'user_id': self.user_id,
+            'parent_id': self.parent_id,
+            'content': self.content,
+            'is_accepted': self.is_accepted,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
         if include_user and self.user:
