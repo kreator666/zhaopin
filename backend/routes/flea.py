@@ -62,7 +62,7 @@ def get_item(item_id):
 @jwt_required()
 def publish_item():
     """发布物品"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.get_json()
     
     item = FleaItem(
@@ -110,7 +110,7 @@ def update_item(item_id):
 @jwt_required()
 def favorite_item(item_id):
     """收藏物品"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     from models import UserFavorite
     
     existing = UserFavorite.query.filter_by(
@@ -138,7 +138,7 @@ def favorite_item(item_id):
 @jwt_required()
 def get_my_items():
     """获取我发布的物品"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     status = request.args.get('status', '')
     
     query = FleaItem.query.filter_by(seller_id=user_id)
@@ -178,7 +178,7 @@ def get_wanteds():
 @jwt_required()
 def create_wanted():
     """发布求购"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.get_json()
     
     wanted = FleaWanted(
@@ -198,6 +198,6 @@ def create_wanted():
 @jwt_required()
 def get_my_wanteds():
     """获取我的求购"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     wanteds = FleaWanted.query.filter_by(user_id=user_id).all()
     return jsonify({'items': [w.to_dict() for w in wanteds]})
