@@ -4,6 +4,7 @@
 
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy import or_
 from models import db, FleaItem, FleaWanted
 
 flea_bp = Blueprint('flea', __name__)
@@ -87,7 +88,7 @@ def publish_item():
 @jwt_required()
 def update_item(item_id):
     """更新物品信息"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     item = FleaItem.query.get_or_404(item_id)
     
     if item.seller_id != user_id:
@@ -200,7 +201,3 @@ def get_my_wanteds():
     user_id = get_jwt_identity()
     wanteds = FleaWanted.query.filter_by(user_id=user_id).all()
     return jsonify({'items': [w.to_dict() for w in wanteds]})
-
-
-# 导入
-from sqlalchemy import or_
