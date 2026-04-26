@@ -54,7 +54,7 @@ def get_course(course_id):
 @jwt_required()
 def enroll_course(course_id):
     """报名课程"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     course = TrainingCourse.query.get_or_404(course_id)
     
     # 检查是否已报名
@@ -76,7 +76,7 @@ def enroll_course(course_id):
 @jwt_required()
 def get_my_courses():
     """获取我的课程"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     status = request.args.get('status', '')
     
     query = CourseEnrollment.query.filter_by(user_id=user_id)
@@ -118,7 +118,7 @@ def get_materials():
 @jwt_required()
 def upload_material():
     """上传学习资料"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.get_json()
     
     material = StudyMaterial(
@@ -137,6 +137,59 @@ def upload_material():
     return jsonify({'message': '上传成功', 'material': material.to_dict()})
 
 
+@training_bp.route('/materials/<int:material_id>', methods=['GET'])
+def get_material(material_id):
+    """获取学习资料详情"""
+    material = StudyMaterial.query.get_or_404(material_id)
+    return jsonify(material.to_dict(include_user=True))
+
+
+@training_bp.route('/materials/<int:material_id>', methods=['PUT'])
+@jwt_required()
+def update_material(material_id):
+    """更新学习资料"""
+    user_id = int(get_jwt_identity())
+    material = StudyMaterial.query.get_or_404(material_id)
+    
+    if material.user_id != user_id:
+        return jsonify({'error': '无权修改'}), 403
+    
+    data = request.get_json()
+    
+    if data.get('title'):
+        material.title = data.get('title')
+    if data.get('description') is not None:
+        material.description = data.get('description')
+    if data.get('category'):
+        material.category = data.get('category')
+    if data.get('file_url'):
+        material.file_url = data.get('file_url')
+    if data.get('file_type'):
+        material.file_type = data.get('file_type')
+    if data.get('file_size'):
+        material.file_size = data.get('file_size')
+    if data.get('is_public') is not None:
+        material.is_public = data.get('is_public')
+    
+    db.session.commit()
+    return jsonify({'message': '更新成功', 'material': material.to_dict()})
+
+
+@training_bp.route('/materials/<int:material_id>', methods=['DELETE'])
+@jwt_required()
+def delete_material(material_id):
+    """删除学习资料"""
+    user_id = int(get_jwt_identity())
+    material = StudyMaterial.query.get_or_404(material_id)
+    
+    if material.user_id != user_id:
+        return jsonify({'error': '无权删除'}), 403
+    
+    material.status = 'removed'
+    db.session.commit()
+    return jsonify({'message': '删除成功'})
+
+
 @training_bp.route('/materials/<int:material_id>/download', methods=['POST'])
 def download_material(material_id):
     """下载资料（计数）"""
@@ -144,6 +197,40 @@ def download_material(material_id):
     material.download_count += 1
     db.session.commit()
     return jsonify({'download_url': material.file_url})
+
+
+@training_bp.route('/materials/<int:material_id>/like', methods=['POST'])
+@jwt_required()
+def like_material(material_id):
+    """点赞资料"""
+    material = StudyMaterial.query.get_or_404(material_id)
+    material.like_count += 1
+    db.session.commit()
+    return jsonify({'message': '点赞成功', 'like_count': material.like_count})
+
+
+@training_bp.route('/my-materials', methods=['GET'])
+@jwt_required()
+def get_my_materials():
+    """获取我的学习资料"""
+    user_id = int(get_jwt_identity())
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 20, type=int)
+    status = request.args.get('status', '')
+    
+    query = StudyMaterial.query.filter_by(user_id=user_id)
+    if status:
+        query = query.filter_by(status=status)
+    
+    materials = query.order_by(StudyMaterial.created_at.desc())\
+        .paginate(page=page, per_page=per_page, error_out=False)
+    
+    return jsonify({
+        'items': [m.to_dict() for m in materials.items],
+        'total': materials.total,
+        'pages': materials.pages,
+        'current_page': page
+    })
 
 
 # ========== 考证信息 ==========
