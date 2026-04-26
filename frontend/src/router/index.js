@@ -117,6 +117,17 @@ const routes = [
     component: () => import('@/views/training/MaterialList.vue')
   },
   {
+    path: '/training/materials/:id',
+    name: 'MaterialDetail',
+    component: () => import('@/views/training/MaterialDetail.vue')
+  },
+  {
+    path: '/training/my-materials',
+    name: 'MyMaterials',
+    component: () => import('@/views/training/MyMaterials.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/training/certifications',
     name: 'Certifications',
     component: () => import('@/views/training/Certifications.vue')

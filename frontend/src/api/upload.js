@@ -26,5 +26,14 @@ export const uploadApi = {
     return request.post('/api/upload/cover', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
+  },
+
+  // 上传文件（学习资料等）
+  uploadFile(file) {
+    const formData = new FormData()
+    formData.append('file', file)
+    return request.post('/api/upload/file', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
   }
 }

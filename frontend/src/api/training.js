@@ -25,12 +25,32 @@ export const getMaterials = (params = {}) => {
   return request.get('/api/training/materials', { params })
 }
 
+export const getMaterial = (materialId) => {
+  return request.get(`/api/training/materials/${materialId}`)
+}
+
 export const uploadMaterial = (data) => {
   return request.post('/api/training/materials', data)
 }
 
+export const updateMaterial = (materialId, data) => {
+  return request.put(`/api/training/materials/${materialId}`, data)
+}
+
+export const deleteMaterial = (materialId) => {
+  return request.delete(`/api/training/materials/${materialId}`)
+}
+
 export const downloadMaterial = (materialId) => {
   return request.post(`/api/training/materials/${materialId}/download`)
+}
+
+export const likeMaterial = (materialId) => {
+  return request.post(`/api/training/materials/${materialId}/like`)
+}
+
+export const getMyMaterials = (params = {}) => {
+  return request.get('/api/training/my-materials', { params })
 }
 
 // ========== 考证信息 ==========
