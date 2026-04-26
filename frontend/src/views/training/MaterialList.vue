@@ -245,7 +245,7 @@ import { getMaterials, uploadMaterial } from '@/api/training'
 import { uploadApi } from '@/api/upload'
 import {
   Search, Upload, Download, Star, Document,
-  Picture, Video, Folder, Files
+  Picture, Folder, Files
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -321,7 +321,7 @@ const fileTypeMap = {
   jpeg: { icon: 'Picture', name: '图片', color: '#409eff' },
   png: { icon: 'Picture', name: '图片', color: '#409eff' },
   gif: { icon: 'Picture', name: '图片', color: '#409eff' },
-  video: { icon: 'Video', name: '视频', color: '#909399' }
+  video: { icon: 'Files', name: '视频', color: '#909399' }
 }
 
 // 上传地址
