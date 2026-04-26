@@ -191,7 +191,7 @@ import { useUserStore } from '@/stores/user'
 import { getMaterial, downloadMaterial, likeMaterial, deleteMaterial, getMaterials } from '@/api/training'
 import {
   Download, Star, ChatDotRound, Delete, Calendar,
-  Document, Picture, Video, Folder, Files
+  Document, Picture, Folder, Files
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
@@ -234,7 +234,7 @@ const fileTypeMap = {
   jpeg: { icon: 'Picture', name: '图片', color: '#409eff' },
   png: { icon: 'Picture', name: '图片', color: '#409eff' },
   gif: { icon: 'Picture', name: '图片', color: '#409eff' },
-  video: { icon: 'Video', name: '视频', color: '#909399' }
+  video: { icon: 'Files', name: '视频', color: '#909399' }
 }
 
 // 获取分类名称
