@@ -14,5 +14,10 @@ export const authApi = {
   // 获取当前用户
   getCurrentUser() {
     return request.get('/api/auth/me')
+  },
+  
+  // 修改密码
+  changePassword(data) {
+    return request.post('/api/auth/change-password', data)
   }
 }

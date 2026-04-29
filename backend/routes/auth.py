@@ -99,3 +99,36 @@ def get_current_user():
         result['profile'] = user.job_seeker_profile.to_dict()
     
     return jsonify(result)
+
+
+@auth_bp.route('/change-password', methods=['POST'])
+@jwt_required()
+def change_password():
+    """修改密码"""
+    user_id = int(get_jwt_identity())
+    user = User.query.get(user_id)
+    
+    if not user:
+        return jsonify({'error': '用户不存在'}), 404
+    
+    data = request.get_json()
+    
+    old_password = data.get('old_password')
+    new_password = data.get('new_password')
+    
+    if not old_password or not new_password:
+        return jsonify({'error': '请提供原密码和新密码'}), 400
+    
+    # 验证原密码
+    if not user.check_password(old_password):
+        return jsonify({'error': '原密码错误'}), 400
+    
+    # 验证新密码长度
+    if len(new_password) < 6:
+        return jsonify({'error': '新密码长度不能少于6位'}), 400
+    
+    # 设置新密码
+    user.set_password(new_password)
+    db.session.commit()
+    
+    return jsonify({'message': '密码修改成功'})

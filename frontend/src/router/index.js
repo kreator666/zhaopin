@@ -20,6 +20,14 @@ const routes = [
     meta: { guest: true }
   },
   
+  // ========== 运营端登录页面 ==========
+  {
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: () => import('@/views/admin/Login.vue'),
+    meta: { guest: true }
+  },
+  
   // ========== 个人主页模块 ==========
   {
     path: '/profile/:id',
@@ -235,11 +243,11 @@ const routes = [
     component: () => import('@/views/flea/WantedList.vue')
   },
   
-  // ========== 企业端路由 ==========
+  // ========== 企业端路由（仅供企业HR使用） ==========
   {
     path: '/company',
     component: () => import('@/views/company/Layout.vue'),
-    meta: { requiresAuth: true, role: 'company_or_admin' },
+    meta: { requiresAuth: true, role: 'company' },
     children: [
       {
         path: '',
@@ -270,35 +278,49 @@ const routes = [
         path: 'campus-talks',
         name: 'CompanyCampusTalks',
         component: () => import('@/views/company/CampusTalks.vue')
+      }
+    ]
+  },
+  
+  // ========== 运营端路由（仅供管理员使用） ==========
+  {
+    path: '/admin',
+    component: () => import('@/views/admin/Layout.vue'),
+    meta: { requiresAuth: true, role: 'admin' },
+    children: [
+      {
+        path: '',
+        name: 'AdminDashboard',
+        component: () => import('@/views/admin/Dashboard.vue')
       },
       {
         path: 'courses',
-        name: 'CompanyCourses',
+        name: 'AdminCourses',
         component: () => import('@/views/company/Courses.vue')
       },
       {
         path: 'courses/create',
-        name: 'CreateCourse',
+        name: 'AdminCreateCourse',
         component: () => import('@/views/company/CourseForm.vue')
       },
       {
         path: 'courses/edit/:id',
-        name: 'EditCourse',
+        name: 'AdminEditCourse',
         component: () => import('@/views/company/CourseForm.vue')
       },
       {
         path: 'certifications',
-        name: 'CompanyCertifications',
+        name: 'AdminCertifications',
         component: () => import('@/views/company/Certifications.vue')
       },
       {
         path: 'certifications/create',
-        name: 'CreateCertification',
+        name: 'AdminCreateCertification',
         component: () => import('@/views/company/CertificationForm.vue')
       },
       {
         path: 'certifications/edit/:id',
-        name: 'EditCertification',
+        name: 'AdminEditCertification',
         component: () => import('@/views/company/CertificationForm.vue')
       }
     ]
@@ -319,29 +341,57 @@ router.beforeEach(async (to, from, next) => {
   
   // 需要登录的页面
   if (to.meta.requiresAuth && !userStore.isLoggedIn) {
+    // 运营端页面跳转到运营端登录页
+    if (to.path.startsWith('/admin')) {
+      return next('/admin/login')
+    }
+    // 其他页面跳转到普通登录页
     return next('/login')
   }
   
   // 需要特定角色的页面
   if (to.meta.role) {
     const userRole = userStore.userInfo?.role
+    
+    // admin 角色：仅允许 admin 访问
+    if (to.meta.role === 'admin') {
+      if (userRole !== 'admin') {
+        return next('/')
+      }
+    }
+    // company 角色：仅允许 company 访问（不再允许 admin）
+    else if (to.meta.role === 'company') {
+      if (userRole !== 'company') {
+        return next('/')
+      }
+    }
     // company_or_admin 角色：允许 company 或 admin 访问
-    if (to.meta.role === 'company_or_admin') {
+    else if (to.meta.role === 'company_or_admin') {
       if (userRole !== 'company' && userRole !== 'admin') {
         return next('/')
       }
-    } else if (userRole !== to.meta.role) {
+    }
+    // 其他角色直接匹配
+    else if (userRole !== to.meta.role) {
       return next('/')
     }
   }
   
   // 游客页面（登录后不能访问）
   if (to.meta.guest && userStore.isLoggedIn) {
-    // 根据角色跳转到不同页面
-    if (userStore.userInfo?.role === 'company') {
-      return next('/company')
-    } else {
-      return next(`/profile/${userStore.userInfo?.id}`)
+    // 运营端登录页：如果是 admin 跳转到运营端
+    if (to.path === '/admin/login' && userStore.userInfo?.role === 'admin') {
+      return next('/admin')
+    }
+    // 普通登录页：根据角色跳转到不同页面
+    if (to.path === '/login') {
+      if (userStore.userInfo?.role === 'admin') {
+        return next('/admin')
+      } else if (userStore.userInfo?.role === 'company') {
+        return next('/company')
+      } else {
+        return next(`/profile/${userStore.userInfo?.id}`)
+      }
     }
   }
   
