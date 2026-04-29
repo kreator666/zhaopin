@@ -81,8 +81,11 @@ const handleSubmit = async () => {
     ElMessage.success('登录成功')
     
     // 根据角色跳转不同页面
-    if (userStore.isAdminOrCompany) {
-      // 企业用户或管理员跳转到企业管理页面
+    if (user.role === 'admin') {
+      // 管理员跳转到运营端
+      router.push('/admin')
+    } else if (user.role === 'company') {
+      // 企业用户跳转到企业管理页面
       router.push('/company')
     } else {
       // 学生/校友等个人用户跳转到个人主页

@@ -27,17 +27,19 @@ def is_admin_or_company(user):
     return user.role in ['admin', 'company']
 
 
-def can_edit_course(user, course):
-    """检查用户是否可以编辑课程"""
+def is_admin_only(user):
+    """检查用户是否是管理员（仅运营端使用）"""
     if not user:
         return False
-    # 管理员可以编辑所有课程
-    if user.role == 'admin':
-        return True
-    # 企业用户只能编辑自己创建的课程
-    if user.role == 'company' and course.created_by == user.id:
-        return True
-    return False
+    return user.role == 'admin'
+
+
+def can_edit_course(user, course):
+    """检查用户是否可以编辑课程（仅运营端使用）"""
+    if not user:
+        return False
+    # 仅管理员可以编辑课程
+    return user.role == 'admin'
 
 
 # ========== 课程（学生端）==========
@@ -147,9 +149,9 @@ def get_my_courses():
 @training_bp.route('/courses', methods=['POST'])
 @jwt_required()
 def create_course():
-    """创建课程（运营端）"""
+    """创建课程（运营端 - 仅管理员）"""
     user = get_current_user()
-    if not is_admin_or_company(user):
+    if not is_admin_only(user):
         return jsonify({'error': '无权创建课程'}), 403
     
     data = request.get_json()
@@ -172,17 +174,12 @@ def create_course():
         except ValueError:
             pass
     
-    # 获取提供方名称
-    provider = data.get('provider')
-    if not provider and user.role == 'company' and user.company:
-        provider = user.company.name
-    
     course = TrainingCourse(
         title=data.get('title'),
         description=data.get('description', ''),
         category=data.get('category'),
         created_by=user.id,
-        provider=provider,
+        provider=data.get('provider'),
         instructor=data.get('instructor'),
         price=data.get('price', 0),
         original_price=data.get('original_price'),
@@ -286,9 +283,9 @@ def delete_course(course_id):
 @training_bp.route('/admin/courses', methods=['GET'])
 @jwt_required()
 def get_admin_courses():
-    """获取所有课程（运营端管理）"""
+    """获取所有课程（运营端管理 - 仅管理员）"""
     user = get_current_user()
-    if not is_admin_or_company(user):
+    if not is_admin_only(user):
         return jsonify({'error': '无权访问'}), 403
     
     page = request.args.get('page', 1, type=int)
@@ -297,10 +294,6 @@ def get_admin_courses():
     category = request.args.get('category', '')
     
     query = TrainingCourse.query
-    
-    # 企业用户只能看到自己的课程
-    if user.role == 'company':
-        query = query.filter_by(created_by=user.id)
     
     if status:
         query = query.filter_by(status=status)
@@ -502,9 +495,9 @@ def get_certification(cert_id):
 @training_bp.route('/certifications', methods=['POST'])
 @jwt_required()
 def create_certification():
-    """创建考证信息（运营端）"""
+    """创建考证信息（运营端 - 仅管理员）"""
     user = get_current_user()
-    if not is_admin_or_company(user):
+    if not is_admin_only(user):
         return jsonify({'error': '无权创建考证信息'}), 403
     
     data = request.get_json()
@@ -551,9 +544,9 @@ def create_certification():
 @training_bp.route('/certifications/<int:cert_id>', methods=['PUT'])
 @jwt_required()
 def update_certification(cert_id):
-    """更新考证信息（运营端）"""
+    """更新考证信息（运营端 - 仅管理员）"""
     user = get_current_user()
-    if not is_admin_or_company(user):
+    if not is_admin_only(user):
         return jsonify({'error': '无权修改考证信息'}), 403
     
     cert = CertificationInfo.query.get_or_404(cert_id)
@@ -603,9 +596,9 @@ def update_certification(cert_id):
 @training_bp.route('/certifications/<int:cert_id>', methods=['DELETE'])
 @jwt_required()
 def delete_certification(cert_id):
-    """删除考证信息（运营端）"""
+    """删除考证信息（运营端 - 仅管理员）"""
     user = get_current_user()
-    if not is_admin_or_company(user):
+    if not is_admin_only(user):
         return jsonify({'error': '无权删除考证信息'}), 403
     
     cert = CertificationInfo.query.get_or_404(cert_id)
@@ -619,9 +612,9 @@ def delete_certification(cert_id):
 @training_bp.route('/admin/certifications', methods=['GET'])
 @jwt_required()
 def get_admin_certifications():
-    """获取所有考证信息（运营端管理）"""
+    """获取所有考证信息（运营端管理 - 仅管理员）"""
     user = get_current_user()
-    if not is_admin_or_company(user):
+    if not is_admin_only(user):
         return jsonify({'error': '无权访问'}), 403
     
     page = request.args.get('page', 1, type=int)
