@@ -226,12 +226,12 @@ const handleFilterChange = () => {
 
 // 跳转到创建课程
 const goToCreate = () => {
-  router.push('/company/courses/create')
+  router.push('/admin/courses/create')
 }
 
 // 跳转到编辑课程
 const goToEdit = (id) => {
-  router.push(`/company/courses/edit/${id}`)
+  router.push(`/admin/courses/edit/${id}`)
 }
 
 // 跳转到课程详情

@@ -204,12 +204,12 @@ const handleFilterChange = () => {
 
 // 跳转创建
 const goToCreate = () => {
-  router.push('/company/certifications/create')
+  router.push('/admin/certifications/create')
 }
 
 // 跳转编辑
 const goToEdit = (id) => {
-  router.push(`/company/certifications/edit/${id}`)
+  router.push(`/admin/certifications/edit/${id}`)
 }
 
 // 跳转详情（学生端）
