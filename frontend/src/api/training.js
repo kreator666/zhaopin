@@ -78,3 +78,24 @@ export const getMyMaterials = (params = {}) => {
 export const getCertifications = (params = {}) => {
   return request.get('/api/training/certifications', { params })
 }
+
+export const getCertification = (certId) => {
+  return request.get(`/api/training/certifications/${certId}`)
+}
+
+// ========== 考证信息（运营端：管理员）==========
+export const getAdminCertifications = (params = {}) => {
+  return request.get('/api/training/admin/certifications', { params })
+}
+
+export const createCertification = (data) => {
+  return request.post('/api/training/certifications', data)
+}
+
+export const updateCertification = (certId, data) => {
+  return request.put(`/api/training/certifications/${certId}`, data)
+}
+
+export const deleteCertification = (certId) => {
+  return request.delete(`/api/training/certifications/${certId}`)
+}
