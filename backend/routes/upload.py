@@ -125,31 +125,3 @@ def upload_avatar():
         'message': '头像上传成功',
         'url': file_url
     })
-
-
-@upload_bp.route('/cover', methods=['POST'])
-@jwt_required()
-def upload_cover():
-    """上传封面图片（课程封面等）"""
-    if 'file' not in request.files:
-        return jsonify({'error': '没有文件'}), 400
-    
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': '文件名为空'}), 400
-    
-    if not allowed_file(file.filename, ALLOWED_IMAGE_EXTENSIONS):
-        return jsonify({'error': '只支持图片文件'}), 400
-    
-    upload_folder = os.path.join('static', 'uploads', 'covers')
-    os.makedirs(upload_folder, exist_ok=True)
-    
-    filename = generate_filename(file.filename)
-    filepath = os.path.join(upload_folder, filename)
-    file.save(filepath)
-    
-    file_url = f'/static/uploads/covers/{filename}'
-    return jsonify({
-        'message': '封面上传成功',
-        'url': file_url
-    })
