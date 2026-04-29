@@ -234,7 +234,7 @@ const routes = [
   {
     path: '/company',
     component: () => import('@/views/company/Layout.vue'),
-    meta: { requiresAuth: true, role: 'company' },
+    meta: { requiresAuth: true, role: 'company_or_admin' },
     children: [
       {
         path: '',
@@ -265,6 +265,21 @@ const routes = [
         path: 'campus-talks',
         name: 'CompanyCampusTalks',
         component: () => import('@/views/company/CampusTalks.vue')
+      },
+      {
+        path: 'courses',
+        name: 'CompanyCourses',
+        component: () => import('@/views/company/Courses.vue')
+      },
+      {
+        path: 'courses/create',
+        name: 'CreateCourse',
+        component: () => import('@/views/company/CourseForm.vue')
+      },
+      {
+        path: 'courses/edit/:id',
+        name: 'EditCourse',
+        component: () => import('@/views/company/CourseForm.vue')
       }
     ]
   }
@@ -288,8 +303,16 @@ router.beforeEach(async (to, from, next) => {
   }
   
   // 需要特定角色的页面
-  if (to.meta.role && userStore.userInfo?.role !== to.meta.role) {
-    return next('/')
+  if (to.meta.role) {
+    const userRole = userStore.userInfo?.role
+    // company_or_admin 角色：允许 company 或 admin 访问
+    if (to.meta.role === 'company_or_admin') {
+      if (userRole !== 'company' && userRole !== 'admin') {
+        return next('/')
+      }
+    } else if (userRole !== to.meta.role) {
+      return next('/')
+    }
   }
   
   // 游客页面（登录后不能访问）
