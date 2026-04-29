@@ -240,7 +240,7 @@ const fetchCertification = async () => {
 
 // 返回
 const goBack = () => {
-  router.push('/company/certifications')
+  router.push('/admin/certifications')
 }
 
 // 提交

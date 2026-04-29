@@ -360,7 +360,7 @@ const handleUploadError = (error) => {
 
 // 返回
 const goBack = () => {
-  router.push('/company/courses')
+  router.push('/admin/courses')
 }
 
 // 提交
