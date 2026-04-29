@@ -483,6 +483,7 @@ class TrainingCourse(db.Model):
     category = db.Column(db.String(50), nullable=False)
     # categories: programming, language, exam_prep, career, hobby, design, data
     
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'))  # 课程创建者
     provider = db.Column(db.String(100))         # 提供方
     instructor = db.Column(db.String(100))       # 讲师
     price = db.Column(db.Float, default=0)       # 价格，0表示免费
@@ -506,13 +507,17 @@ class TrainingCourse(db.Model):
     
     status = db.Column(db.String(20), default='active')  # active, ended, cancelled
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    def to_dict(self, include_stats=False):
+    creator = db.relationship('User', backref='created_courses', lazy=True)
+    
+    def to_dict(self, include_stats=False, include_creator=False):
         data = {
             'id': self.id,
             'title': self.title,
             'description': self.description,
             'category': self.category,
+            'created_by': self.created_by,
             'provider': self.provider,
             'instructor': self.instructor,
             'price': self.price,
@@ -526,12 +531,15 @@ class TrainingCourse(db.Model):
             'start_date': self.start_date.isoformat() if self.start_date else None,
             'end_date': self.end_date.isoformat() if self.end_date else None,
             'status': self.status,
-            'created_at': self.created_at.isoformat() if self.created_at else None
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
         if include_stats:
             data['enrolled_count'] = self.enrolled_count
             data['rating'] = self.rating
             data['review_count'] = self.review_count
+        if include_creator and self.creator:
+            data['creator'] = self.creator.to_dict()
         return data
 
 

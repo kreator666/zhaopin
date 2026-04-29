@@ -3,7 +3,7 @@
  */
 import request from './request'
 
-// ========== 课程 ==========
+// ========== 课程（学生端）==========
 export const getCourses = (params = {}) => {
   return request.get('/api/training/courses', { params })
 }
@@ -16,8 +16,29 @@ export const enrollCourse = (courseId) => {
   return request.post(`/api/training/courses/${courseId}/enroll`)
 }
 
-export const getMyCourses = () => {
-  return request.get('/api/training/my-courses')
+export const checkEnrollment = (courseId) => {
+  return request.get(`/api/training/courses/${courseId}/check-enrollment`)
+}
+
+export const getMyCourses = (params = {}) => {
+  return request.get('/api/training/my-courses', { params })
+}
+
+// ========== 课程（运营端：管理员/企业用户）==========
+export const getAdminCourses = (params = {}) => {
+  return request.get('/api/training/admin/courses', { params })
+}
+
+export const createCourse = (data) => {
+  return request.post('/api/training/courses', data)
+}
+
+export const updateCourse = (courseId, data) => {
+  return request.put(`/api/training/courses/${courseId}`, data)
+}
+
+export const deleteCourse = (courseId) => {
+  return request.delete(`/api/training/courses/${courseId}`)
 }
 
 // ========== 学习资料 ==========
