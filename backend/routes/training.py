@@ -488,3 +488,160 @@ def get_certifications():
         'pages': certs.pages,
         'current_page': page
     })
+
+
+@training_bp.route('/certifications/<int:cert_id>', methods=['GET'])
+def get_certification(cert_id):
+    """获取考证信息详情（学生端）"""
+    cert = CertificationInfo.query.get_or_404(cert_id)
+    return jsonify(cert.to_dict())
+
+
+# ========== 考证信息（运营端：管理员）==========
+
+@training_bp.route('/certifications', methods=['POST'])
+@jwt_required()
+def create_certification():
+    """创建考证信息（运营端）"""
+    user = get_current_user()
+    if not user or user.role != 'admin':
+        return jsonify({'error': '无权创建考证信息'}), 403
+    
+    data = request.get_json()
+    
+    if not data.get('name'):
+        return jsonify({'error': '缺少必要字段'}), 400
+    
+    # 解析日期
+    def parse_date(date_str):
+        if not date_str:
+            return None
+        try:
+            return datetime.strptime(date_str, '%Y-%m-%d').date()
+        except ValueError:
+            return None
+    
+    registration_start = parse_date(data.get('registration_start'))
+    registration_end = parse_date(data.get('registration_end'))
+    exam_date = parse_date(data.get('exam_date'))
+    
+    cert = CertificationInfo(
+        name=data.get('name'),
+        category=data.get('category'),
+        description=data.get('description', ''),
+        organizer=data.get('organizer'),
+        registration_start=registration_start,
+        registration_end=registration_end,
+        exam_date=exam_date,
+        registration_url=data.get('registration_url'),
+        fee=data.get('fee'),
+        requirements=data.get('requirements'),
+        status=data.get('status', 'upcoming')
+    )
+    
+    db.session.add(cert)
+    db.session.commit()
+    
+    return jsonify({
+        'message': '创建成功',
+        'certification': cert.to_dict()
+    }), 201
+
+
+@training_bp.route('/certifications/<int:cert_id>', methods=['PUT'])
+@jwt_required()
+def update_certification(cert_id):
+    """更新考证信息（运营端）"""
+    user = get_current_user()
+    if not user or user.role != 'admin':
+        return jsonify({'error': '无权修改考证信息'}), 403
+    
+    cert = CertificationInfo.query.get_or_404(cert_id)
+    data = request.get_json()
+    
+    if data.get('name'):
+        cert.name = data.get('name')
+    if data.get('category'):
+        cert.category = data.get('category')
+    if data.get('description') is not None:
+        cert.description = data.get('description')
+    if data.get('organizer'):
+        cert.organizer = data.get('organizer')
+    if data.get('registration_url'):
+        cert.registration_url = data.get('registration_url')
+    if data.get('fee') is not None:
+        cert.fee = data.get('fee')
+    if data.get('requirements') is not None:
+        cert.requirements = data.get('requirements')
+    if data.get('status'):
+        cert.status = data.get('status')
+    
+    # 解析日期
+    def parse_date(date_str):
+        if not date_str:
+            return None
+        try:
+            return datetime.strptime(date_str, '%Y-%m-%d').date()
+        except ValueError:
+            return None
+    
+    if data.get('registration_start'):
+        cert.registration_start = parse_date(data.get('registration_start'))
+    if data.get('registration_end'):
+        cert.registration_end = parse_date(data.get('registration_end'))
+    if data.get('exam_date'):
+        cert.exam_date = parse_date(data.get('exam_date'))
+    
+    db.session.commit()
+    
+    return jsonify({
+        'message': '更新成功',
+        'certification': cert.to_dict()
+    })
+
+
+@training_bp.route('/certifications/<int:cert_id>', methods=['DELETE'])
+@jwt_required()
+def delete_certification(cert_id):
+    """删除考证信息（运营端）"""
+    user = get_current_user()
+    if not user or user.role != 'admin':
+        return jsonify({'error': '无权删除考证信息'}), 403
+    
+    cert = CertificationInfo.query.get_or_404(cert_id)
+    
+    db.session.delete(cert)
+    db.session.commit()
+    
+    return jsonify({'message': '删除成功'})
+
+
+@training_bp.route('/admin/certifications', methods=['GET'])
+@jwt_required()
+def get_admin_certifications():
+    """获取所有考证信息（运营端管理）"""
+    user = get_current_user()
+    if not user or user.role != 'admin':
+        return jsonify({'error': '无权访问'}), 403
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 20, type=int)
+    category = request.args.get('category', '')
+    status = request.args.get('status', '')
+    
+    query = CertificationInfo.query
+    
+    if category:
+        query = query.filter_by(category=category)
+    if status:
+        query = query.filter_by(status=status)
+    
+    certs = query.order_by(CertificationInfo.created_at.desc())\
+        .paginate(page=page, per_page=per_page, error_out=False)
+    
+    return jsonify({
+        'items': [c.to_dict() for c in certs.items],
+        'total': certs.total,
+        'pages': certs.pages,
+        'current_page': page
+    })

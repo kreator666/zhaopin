@@ -132,6 +132,11 @@ const routes = [
     name: 'Certifications',
     component: () => import('@/views/training/Certifications.vue')
   },
+  {
+    path: '/training/certifications/:id',
+    name: 'CertificationDetail',
+    component: () => import('@/views/training/CertificationDetail.vue')
+  },
   
   // ========== 交友社交模块 ==========
   {
@@ -280,6 +285,21 @@ const routes = [
         path: 'courses/edit/:id',
         name: 'EditCourse',
         component: () => import('@/views/company/CourseForm.vue')
+      },
+      {
+        path: 'certifications',
+        name: 'CompanyCertifications',
+        component: () => import('@/views/company/Certifications.vue')
+      },
+      {
+        path: 'certifications/create',
+        name: 'CreateCertification',
+        component: () => import('@/views/company/CertificationForm.vue')
+      },
+      {
+        path: 'certifications/edit/:id',
+        name: 'EditCertification',
+        component: () => import('@/views/company/CertificationForm.vue')
       }
     ]
   }

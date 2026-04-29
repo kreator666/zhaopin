@@ -39,6 +39,11 @@
             <el-icon><VideoPlay /></el-icon>
             <span>课程管理</span>
           </el-menu-item>
+          
+          <el-menu-item index="/company/certifications">
+            <el-icon><Reading /></el-icon>
+            <span>考证信息</span>
+          </el-menu-item>
         </el-menu>
         
         <div class="sidebar-footer">
