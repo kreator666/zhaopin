@@ -504,7 +504,7 @@ def get_certification(cert_id):
 def create_certification():
     """创建考证信息（运营端）"""
     user = get_current_user()
-    if not user or user.role != 'admin':
+    if not is_admin_or_company(user):
         return jsonify({'error': '无权创建考证信息'}), 403
     
     data = request.get_json()
@@ -553,7 +553,7 @@ def create_certification():
 def update_certification(cert_id):
     """更新考证信息（运营端）"""
     user = get_current_user()
-    if not user or user.role != 'admin':
+    if not is_admin_or_company(user):
         return jsonify({'error': '无权修改考证信息'}), 403
     
     cert = CertificationInfo.query.get_or_404(cert_id)
@@ -605,7 +605,7 @@ def update_certification(cert_id):
 def delete_certification(cert_id):
     """删除考证信息（运营端）"""
     user = get_current_user()
-    if not user or user.role != 'admin':
+    if not is_admin_or_company(user):
         return jsonify({'error': '无权删除考证信息'}), 403
     
     cert = CertificationInfo.query.get_or_404(cert_id)
@@ -621,7 +621,7 @@ def delete_certification(cert_id):
 def get_admin_certifications():
     """获取所有考证信息（运营端管理）"""
     user = get_current_user()
-    if not user or user.role != 'admin':
+    if not is_admin_or_company(user):
         return jsonify({'error': '无权访问'}), 403
     
     page = request.args.get('page', 1, type=int)
