@@ -8,6 +8,7 @@
 from datetime import datetime
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy import or_
 from models import db, User, TrainingCourse, CourseEnrollment, StudyMaterial, CertificationInfo
 
 training_bp = Blueprint('training', __name__)
@@ -62,7 +63,7 @@ def get_courses():
     if keyword:
         keyword_pattern = f'%{keyword}%'
         query = query.filter(
-            db.or_(
+            or_(
                 TrainingCourse.title.like(keyword_pattern),
                 TrainingCourse.description.like(keyword_pattern),
                 TrainingCourse.provider.like(keyword_pattern),
