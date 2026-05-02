@@ -12,14 +12,14 @@
     <el-card class="filter-card">
       <el-form :inline="true" :model="filterForm" label-position="right">
         <el-form-item label="状态">
-          <el-select v-model="filterForm.status" clearable placeholder="全部状态" @change="handleFilterChange">
+          <el-select v-model="filterForm.status" clearable placeholder="全部状态" @change="handleFilterChange" style="width: 140px">
             <el-option label="即将开始" value="upcoming" />
             <el-option label="报名中" value="ongoing" />
             <el-option label="已结束" value="ended" />
           </el-select>
         </el-form-item>
         <el-form-item label="分类">
-          <el-select v-model="filterForm.category" clearable placeholder="全部分类" @change="handleFilterChange">
+          <el-select v-model="filterForm.category" clearable placeholder="全部分类" @change="handleFilterChange" style="width: 140px">
             <el-option label="语言考试" value="language" />
             <el-option label="计算机等级" value="computer" />
             <el-option label="职业资格" value="professional" />
@@ -247,13 +247,40 @@ onMounted(() => {
   padding-top: 0;
 }
 
-/* 修复 el-select placeholder 显示问题 */
+/* 修复 el-select 文字显示问题 - 确保 placeholder 和选中值都能正确显示 */
+.filter-card :deep(.el-select .el-input__inner) {
+  color: #606266 !important;
+}
+
 .filter-card :deep(.el-select .el-input__placeholder) {
   color: #909399 !important;
 }
 
+.filter-card :deep(.el-select .el-input__wrapper) {
+  padding: 1px 15px !important;
+  background-color: #fff !important;
+  box-shadow: 0 0 0 1px #dcdfe6 inset !important;
+}
+
 .filter-card :deep(.el-select .el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 1px #409eff inset;
+  box-shadow: 0 0 0 1px #409eff inset !important;
+}
+
+.filter-card :deep(.el-select .el-input.is-focus .el-input__wrapper) {
+  box-shadow: 0 0 0 1px #409eff inset !important;
+}
+
+.filter-card :deep(.el-select-dropdown__item) {
+  color: #606266 !important;
+}
+
+.filter-card :deep(.el-select-dropdown__item.selected) {
+  color: #409eff !important;
+  font-weight: 700 !important;
+}
+
+.filter-card :deep(.el-select .el-input__prefix-inner) {
+  color: #909399 !important;
 }
 
 .page-header {
