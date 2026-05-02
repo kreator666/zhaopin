@@ -247,6 +247,15 @@ onMounted(() => {
   padding-top: 0;
 }
 
+/* 修复 el-select placeholder 显示问题 */
+.filter-card :deep(.el-select .el-input__placeholder) {
+  color: #909399 !important;
+}
+
+.filter-card :deep(.el-select .el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 1px #409eff inset;
+}
+
 .page-header {
   display: flex;
   justify-content: space-between;
