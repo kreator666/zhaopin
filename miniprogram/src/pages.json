@@ -1,0 +1,176 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "首页",
+        "navigationBarBackgroundColor": "#409EFF",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/login/index",
+      "style": {
+        "navigationBarTitleText": "登录",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/register/index",
+      "style": {
+        "navigationBarTitleText": "注册",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "navigationBarBackgroundColor": "#409EFF",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/jobs/list",
+      "style": {
+        "navigationBarTitleText": "找工作",
+        "navigationBarBackgroundColor": "#409EFF",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/jobs/detail",
+      "style": {
+        "navigationBarTitleText": "职位详情",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/training/courses",
+      "style": {
+        "navigationBarTitleText": "精品课程",
+        "navigationBarBackgroundColor": "#E6A23C",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/training/course-detail",
+      "style": {
+        "navigationBarTitleText": "课程详情",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/training/my-courses",
+      "style": {
+        "navigationBarTitleText": "我的课程",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/training/materials",
+      "style": {
+        "navigationBarTitleText": "学习资料",
+        "navigationBarBackgroundColor": "#E6A23C",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/training/certifications",
+      "style": {
+        "navigationBarTitleText": "考证信息",
+        "navigationBarBackgroundColor": "#E6A23C",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/training/cert-detail",
+      "style": {
+        "navigationBarTitleText": "考证详情",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/social/feed",
+      "style": {
+        "navigationBarTitleText": "社交",
+        "navigationBarBackgroundColor": "#67C23A",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/social/messages",
+      "style": {
+        "navigationBarTitleText": "消息",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/flea/market",
+      "style": {
+        "navigationBarTitleText": "跳蚤市场",
+        "navigationBarBackgroundColor": "#F56C6C",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/flea/my-items",
+      "style": {
+        "navigationBarTitleText": "我的发布",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "求职社交平台",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#409EFF",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/tabbar/home.png",
+        "selectedIconPath": "static/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/jobs/list",
+        "text": "找工作",
+        "iconPath": "static/tabbar/job.png",
+        "selectedIconPath": "static/tabbar/job-active.png"
+      },
+      {
+        "pagePath": "pages/training/courses",
+        "text": "学习",
+        "iconPath": "static/tabbar/learn.png",
+        "selectedIconPath": "static/tabbar/learn-active.png"
+      },
+      {
+        "pagePath": "pages/social/feed",
+        "text": "社交",
+        "iconPath": "static/tabbar/social.png",
+        "selectedIconPath": "static/tabbar/social-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "static/tabbar/profile.png",
+        "selectedIconPath": "static/tabbar/profile-active.png"
+      }
+    ]
+  }
+}

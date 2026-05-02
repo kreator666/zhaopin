@@ -1,0 +1,39 @@
+$uni-color-primary: #409eff;
+$uni-color-success: #67c23a;
+$uni-color-warning: #e6a23c;
+$uni-color-error: #f56c6c;
+$uni-color-info: #909399;
+
+$uni-text-color: #333333;
+$uni-text-color-grey: #909399;
+$uni-text-color-placeholder: #c0c4cc;
+$uni-text-color-white: #ffffff;
+
+$uni-bg-color: #f5f7fa;
+$uni-bg-color-grey: #f0f0f0;
+$uni-bg-color-white: #ffffff;
+
+$uni-border-color: #ebeef5;
+
+$uni-font-size-sm: 24rpx;
+$uni-font-size-base: 28rpx;
+$uni-font-size-lg: 32rpx;
+$uni-font-size-xl: 36rpx;
+
+$uni-spacing-sm: 10rpx;
+$uni-spacing-base: 20rpx;
+$uni-spacing-lg: 30rpx;
+$uni-spacing-xl: 40rpx;
+
+$uni-radius-sm: 8rpx;
+$uni-radius-base: 12rpx;
+$uni-radius-lg: 16rpx;
+$uni-radius-xl: 24rpx;
+
+$uni-shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+$uni-shadow-base: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+$uni-shadow-lg: 0 8rpx 32rpx rgba(0, 0, 0, 0.15);
+
+$gradient-primary: linear-gradient(135deg, #409eff 0%, #67c23a 100%);
+$gradient-warning: linear-gradient(135deg, #e6a23c 0%, #f56c6c 100%);
+$gradient-success: linear-gradient(135deg, #67c23a 0%, #909399 100%);
