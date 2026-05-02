@@ -15,7 +15,7 @@
               v-if="userStore.isLoggedIn && isAdminOrCompany" 
               type="primary" 
               size="large"
-              @click="$router.push('/company/courses')"
+              @click="$router.push('/admin/courses')"
             >
               <el-icon><Plus /></el-icon>
               管理课程
