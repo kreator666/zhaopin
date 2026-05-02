@@ -343,7 +343,7 @@ const goToSearch = () => {
 }
 
 const goToCertDetail = (certId) => {
-  uni.showToast({ title: '考证详情功能开发中', icon: 'none' })
+  uni.navigateTo({ url: `/pages/training/certification-detail?id=${certId}` })
 }
 
 const openRegistration = (url) => {

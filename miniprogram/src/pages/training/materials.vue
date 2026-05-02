@@ -290,7 +290,7 @@ const goToMyMaterials = () => {
 }
 
 const goToMaterialDetail = (materialId) => {
-  uni.showToast({ title: '资料详情功能开发中', icon: 'none' })
+  uni.navigateTo({ url: `/pages/training/material-detail?id=${materialId}` })
 }
 
 onMounted(() => {

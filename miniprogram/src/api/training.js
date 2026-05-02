@@ -88,6 +88,11 @@ const trainingApi = {
     return request.post(`/api/training/materials/${materialId}/like`)
   },
   
+  // 下载学习资料（计数）
+  downloadMaterial(materialId) {
+    return request.post(`/api/training/materials/${materialId}/download`)
+  },
+  
   // 获取我的学习资料
   getMyMaterials(params = {}) {
     return request.get('/api/training/my-materials', params)
