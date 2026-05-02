@@ -71,6 +71,22 @@
         "navigationBarBackgroundColor": "#F56C6C",
         "navigationBarTextStyle": "white"
       }
+    },
+    {
+      "path": "pages/training/material-detail",
+      "style": {
+        "navigationBarTitleText": "资料详情",
+        "navigationBarBackgroundColor": "#67C23A",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/training/certification-detail",
+      "style": {
+        "navigationBarTitleText": "考证详情",
+        "navigationBarBackgroundColor": "#F56C6C",
+        "navigationBarTextStyle": "white"
+      }
     }
   ],
   "globalStyle": {
