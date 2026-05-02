@@ -198,11 +198,11 @@ const goToCourses = () => {
 }
 
 const goToMaterials = () => {
-  uni.showToast({ title: '学习资料功能开发中', icon: 'none' })
+  uni.navigateTo({ url: '/pages/training/materials' })
 }
 
 const goToCertifications = () => {
-  uni.showToast({ title: '考证信息功能开发中', icon: 'none' })
+  uni.navigateTo({ url: '/pages/training/certifications' })
 }
 
 const goToSocial = () => {
