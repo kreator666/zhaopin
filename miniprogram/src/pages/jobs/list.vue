@@ -230,7 +230,7 @@ const goToSearch = () => {
 }
 
 const goToJobDetail = (jobId) => {
-  uni.navigateTo({ url: `/pages/jobs/detail?id=${jobId}` })
+  uni.showToast({ title: '职位详情功能开发中', icon: 'none' })
 }
 
 // 收藏/取消收藏

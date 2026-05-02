@@ -167,7 +167,7 @@ const goToEditProfile = () => {
 }
 
 const goToMyCourses = () => {
-  uni.navigateTo({ url: '/pages/training/my-courses' })
+  uni.showToast({ title: '我的课程功能开发中', icon: 'none' })
 }
 
 const goToMyMaterials = () => {
@@ -175,7 +175,7 @@ const goToMyMaterials = () => {
 }
 
 const goToMyFleaItems = () => {
-  uni.navigateTo({ url: '/pages/flea/my-items' })
+  uni.showToast({ title: '我的发布功能开发中', icon: 'none' })
 }
 
 const goToMyApplications = () => {
@@ -191,7 +191,7 @@ const goToFollowers = () => {
 }
 
 const goToMessages = () => {
-  uni.navigateTo({ url: '/pages/social/messages' })
+  uni.showToast({ title: '消息功能开发中', icon: 'none' })
 }
 
 const goToAbout = () => {

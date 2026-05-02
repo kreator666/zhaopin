@@ -169,10 +169,18 @@ const hotJobs = ref([])
 // 推荐课程
 const recommendCourses = ref([])
 
+// 检测当前运行环境
+const isH5 = typeof window !== 'undefined' && typeof window.document !== 'undefined'
+
 // 获取图片
 const getCoverImage = (image) => {
   if (!image) return ''
   if (image.startsWith('http')) return image
+  // H5 模式使用相对路径，依赖 Vite 代理
+  if (isH5) {
+    return image
+  }
+  // 小程序模式使用完整 URL
   return 'http://localhost:5000' + image
 }
 
@@ -190,11 +198,11 @@ const goToCourses = () => {
 }
 
 const goToMaterials = () => {
-  uni.navigateTo({ url: '/pages/training/materials' })
+  uni.showToast({ title: '学习资料功能开发中', icon: 'none' })
 }
 
 const goToCertifications = () => {
-  uni.navigateTo({ url: '/pages/training/certifications' })
+  uni.showToast({ title: '考证信息功能开发中', icon: 'none' })
 }
 
 const goToSocial = () => {
@@ -202,7 +210,7 @@ const goToSocial = () => {
 }
 
 const goToFlea = () => {
-  uni.navigateTo({ url: '/pages/flea/market' })
+  uni.showToast({ title: '跳蚤市场功能开发中', icon: 'none' })
 }
 
 const goToCampusTalks = () => {
@@ -214,11 +222,11 @@ const goToInterviews = () => {
 }
 
 const goToJobDetail = (jobId) => {
-  uni.navigateTo({ url: `/pages/jobs/detail?id=${jobId}` })
+  uni.showToast({ title: '职位详情功能开发中', icon: 'none' })
 }
 
 const goToCourseDetail = (courseId) => {
-  uni.navigateTo({ url: `/pages/training/course-detail?id=${courseId}` })
+  uni.showToast({ title: '课程详情功能开发中', icon: 'none' })
 }
 
 // 获取数据

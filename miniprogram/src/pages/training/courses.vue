@@ -227,10 +227,18 @@ const categoryMap = {
   data: '数据科学'
 }
 
+// 检测当前运行环境
+const isH5 = typeof window !== 'undefined' && typeof window.document !== 'undefined'
+
 // 获取封面图片
 const getCoverImage = (image) => {
   if (!image) return ''
   if (image.startsWith('http')) return image
+  // H5 模式使用相对路径，依赖 Vite 代理
+  if (isH5) {
+    return image
+  }
+  // 小程序模式使用完整 URL
   return 'http://localhost:5000' + image
 }
 
@@ -267,6 +275,7 @@ const fetchCourses = async () => {
     if (activeCategory.value) {
       params.category = activeCategory.value
     }
+    
     if (activeLevel.value) {
       params.level = activeLevel.value
     }
@@ -311,11 +320,11 @@ const goToSearch = () => {
 }
 
 const goToMyCourses = () => {
-  uni.navigateTo({ url: '/pages/training/my-courses' })
+  uni.showToast({ title: '我的课程功能开发中', icon: 'none' })
 }
 
 const goToCourseDetail = (courseId) => {
-  uni.navigateTo({ url: `/pages/training/course-detail?id=${courseId}` })
+  uni.showToast({ title: '课程详情功能开发中', icon: 'none' })
 }
 
 onMounted(() => {
